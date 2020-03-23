@@ -12,6 +12,7 @@ public class UserNnKnownException extends UserException {
     public UserNnKnownException(String message, Object data) {
         super(UserErrorCodes.USER_UNKNOW_EXCEPTION, message, data);
     }
+
     public UserNnKnownException(String message) {
         super(UserErrorCodes.USER_UNKNOW_EXCEPTION, message);
     }

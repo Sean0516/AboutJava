@@ -4,16 +4,17 @@ import com.common.base.ServiceException;
 
 /**
  * @author sean
- * @date 2020/3/23  16:18
+ * @date 2020/3/23  16:56
  */
-public class UserException extends ServiceException {
 
-    public UserException(long code, String message, Object data) {
+class UserException extends ServiceException {
+
+    UserException(long code, String message, Object data) {
         super("userError", code, message, data);
     }
-    public UserException(long code, String message) {
+
+    UserException(long code, String message) {
         super("userError", code, message);
     }
-
 
 }
