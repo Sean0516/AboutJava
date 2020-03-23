@@ -4,7 +4,7 @@ package com.common.base;
  * @author sean
  * @date 2020/3/23  15:30
  */
-public abstract class ServiceException extends RuntimeException {
+public class ServiceException extends RuntimeException {
     private Result result;
 
     public ServiceException(String description) {
@@ -21,6 +21,7 @@ public abstract class ServiceException extends RuntimeException {
         super(description);
         this.result = new Result(code, message, false);
     }
+
     public Result getResult() {
         return result;
     }
