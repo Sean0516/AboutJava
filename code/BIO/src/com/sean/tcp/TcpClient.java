@@ -1,7 +1,11 @@
-package com.vociecyber.tcp.bio;
+package com.sean.tcp;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.Socket;
+
 
 /**
  * Created by Sean on 2018/6/1.
@@ -16,6 +20,7 @@ public class TcpClient {
         PrintStream clientOut=new PrintStream(clientSocket.getOutputStream());
         boolean flag=true;
         System.out.println("开启客户端");
+
         while (flag){
             System.out.println("输入需要发送的消息");
             String  msg=userInput.readLine();

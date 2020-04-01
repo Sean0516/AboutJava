@@ -1,4 +1,4 @@
-package com.vociecyber.tcp.bio;
+package com.sean.tcp;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -1,7 +1,5 @@
-package com.vociecyber.udputil;
+package com.sean.udp;
 
-import com.alibaba.fastjson.JSONObject;
-import com.vociecyber.udp.Demo1;
 
 import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
@@ -23,12 +21,12 @@ public class UdpClient {
      */
     private static final int MAX_SEND_NUM = 2;
 
-    public static void udpClient(int client, String ipAddress, int server, Object object) throws Exception {
+    public static void udpClient(int client, String ipAddress, int server) throws Exception {
         byte[] buf = new byte[1024];
         //客户端 监听端口
+        String str = "hello server";
         DatagramSocket datagramSocket = new DatagramSocket(client);
         InetAddress address = InetAddress.getByName(ipAddress);
-        String str = JSONObject.toJSONString(object);
         //发送数据端口
         DatagramPacket sendMessage = new DatagramPacket(str.getBytes(), str.getBytes().length, address, server);
         //获取数据缓冲池
@@ -45,7 +43,7 @@ public class UdpClient {
                 receivedResponse = true;
             } catch (InterruptedIOException e) {
                 count += 1;
-                System.out.println("重新连接 次数："+count);
+                System.out.println("重新连接 次数：" + count);
             }
         }
         if (receivedResponse) {
