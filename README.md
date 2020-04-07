@@ -85,7 +85,7 @@ BlockingQueue阻塞队列
 6. [SynchronousQueue](https://github.com/Sean0516/AboutJava/blob/dev/doc/%E5%AE%B9%E5%99%A8/%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/BlockingQueue%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97/SynchronousQueue.md)
 
 --- 
-### 并发 (很多比较来自java并发艺术一书)
+### 并发 (很多笔记来自java并发艺术一书)
 ##### 多线程基础
 1. [线程简介](https://github.com/Sean0516/AboutJava/blob/dev/doc/%E5%B9%B6%E5%8F%91/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/%E7%BA%BF%E7%A8%8B%E7%AE%80%E4%BB%8B.md)
 2. [多线程的实现方式](https://github.com/Sean0516/AboutJava/blob/dev/doc/%E5%B9%B6%E5%8F%91/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F.md.md)
