@@ -141,3 +141,43 @@ BlockingQueue阻塞队列
 2. [Fork Join 框架的实现原理](https://github.com/Sean0516/AboutJava/blob/dev/doc/%E5%B9%B6%E5%8F%91/ForkJoin/Fork%20Join%20%20%E6%A1%86%E6%9E%B6%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86.md)
 
 ##### 原子操作类
+
+---
+### JVM
+1. [什么是Java虚拟机](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E4%BB%80%E4%B9%88%E6%98%AFJava%E8%99%9A%E6%8B%9F%E6%9C%BA.md)
+2. [栈帧（方法运行时）](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E6%A0%88%E5%B8%A7/%E6%A0%88%E5%B8%A7%EF%BC%88%E6%96%B9%E6%B3%95%E8%BF%90%E8%A1%8C%E6%97%B6%EF%BC%89.md)
+
+##### 虚拟机结构
+1. [Java 运行时的数据区](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BB%93%E6%9E%84/Java%20%E8%BF%90%E8%A1%8C%E6%97%B6%E7%9A%84%E6%95%B0%E6%8D%AE%E5%8C%BA.md)
+2. [基本数据类型和引用类型](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BB%93%E6%9E%84/%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B.md)
+3. [HotSpot 虚拟机对象详解](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BB%93%E6%9E%84/HotSpot%20%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AF%B9%E8%B1%A1%E8%AF%A6%E8%A7%A3.md)
+4. [运行时常量池](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BB%93%E6%9E%84/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0.md)
+##### class 文件格式
+1. [ClassLoader类加载器](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/class%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/ClassLoader%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8.md)
+2. ClassFile
+3. 常量池
+##### 类的加载链接与初始化
+1. [类的生命周期](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%9E%E6%8E%A5%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96/%E7%B1%BB%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.md)
+2. [JAVA 类的初始化顺序（静态代码块，普通代码块，构造函数 的执行顺序）](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%9E%E6%8E%A5%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96/JAVA%20%E7%B1%BB%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E9%A1%BA%E5%BA%8F%EF%BC%88%E9%9D%99%E6%80%81%E4%BB%A3%E7%A0%81%E5%9D%97%EF%BC%8C%E6%99%AE%E9%80%9A%E4%BB%A3%E7%A0%81%E5%9D%97%EF%BC%8C%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%20%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%89.md)
+
+##### 对象的生命周期
+1. [对象的创建](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA.md)
+2. [对象的内存分配以及访问定位](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E4%BB%A5%E5%8F%8A%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D.md)
+3. [对象是否死亡判断](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/%E5%AF%B9%E8%B1%A1%E6%98%AF%E5%90%A6%E6%AD%BB%E4%BA%A1%E5%88%A4%E6%96%AD.md)
+
+##### 垃圾收集器和内存分配策略
+1. [垃圾收集概述](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%A6%82%E8%BF%B0.md)
+2. [垃圾收集算法](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E7%AE%97%E6%B3%95.md)
+3. [内存分配与回收策略](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5/%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E4%B8%8E%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5.md)
+4. [（方法区）永久代的垃圾收集](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5/%EF%BC%88%E6%96%B9%E6%B3%95%E5%8C%BA%EF%BC%89%E6%B0%B8%E4%B9%85%E4%BB%A3%E7%9A%84%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86.md)
+5. [HotSpot 分代垃圾收集器](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5/HotSpot%20%E5%88%86%E4%BB%A3%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8.md)
+
+##### 虚拟机性能监控工具
+1. [命令行工具] (https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7%E5%B7%A5%E5%85%B7/%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7.md)
+2. [可视化工具](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7%E5%B7%A5%E5%85%B7/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7.md)
+
+
+
+
+
+
