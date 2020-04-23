@@ -20,7 +20,7 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public Object defaultErrorHandler(ServiceException e) {
         Result result = e.getResult();
-        logger.info("error code [{}] ,error msg [{}]", result.getCode(), result.getMessage());
+        logger.error("error code [{}] ,error msg [{}]", result.getCode(), result.getMessage());
         return new ResponseEntity(result, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
