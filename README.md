@@ -175,9 +175,11 @@ BlockingQueue阻塞队列
 ##### 虚拟机性能监控工具
 1. [命令行工具](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7%E5%B7%A5%E5%85%B7/%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E5%85%B7.md )
 2. [可视化工具](https://github.com/Sean0516/AboutJava/blob/dev/doc/JVM/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7%E5%B7%A5%E5%85%B7/%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7.md)
-
-
-
-
-
+#####  编程规范
+1. [关于代码优化的小建议](https://github.com/Sean0516/AboutJava/blob/dev/doc/%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83/%E5%85%B3%E4%BA%8E%E4%BB%A3%E7%A0%81%E4%BC%98%E5%8C%96%E7%9A%84%E5%B0%8F%E5%BB%BA%E8%AE%AE.md)
+2. [单元测试](https://github.com/Sean0516/AboutJava/blob/dev/doc/%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95.md)
+3. [安全规约](https://github.com/Sean0516/AboutJava/blob/dev/doc/%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83/%E5%AE%89%E5%85%A8%E8%A7%84%E7%BA%A6.md)
+4. [工具类的编写建议](https://github.com/Sean0516/AboutJava/blob/dev/doc/%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83/%E5%B7%A5%E5%85%B7%E7%B1%BB%E7%9A%84%E7%BC%96%E5%86%99%E5%BB%BA%E8%AE%AE.md)
+5. [日志打印的正确姿势](https://github.com/Sean0516/AboutJava/blob/dev/doc/%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83/%E6%97%A5%E5%BF%97%E6%89%93%E5%8D%B0%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF.md)
+6. [集合处理](https://github.com/Sean0516/AboutJava/blob/dev/doc/%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83/%E9%9B%86%E5%90%88%E5%A4%84%E7%90%86.md)
 
