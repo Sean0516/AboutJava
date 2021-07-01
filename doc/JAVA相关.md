@@ -1337,9 +1337,74 @@
     6. 实现中 zxid 是一个 64 为的数字，它高 32 位是 epoch 用来标识 leader 关系是否改变，每次一个 leader 被选出来，它都会有一个新的 epoch。低 32 位是个递增计数。
     7. 当 leader 崩溃或者 leader 失去大多数的 follower，这时候 zk 进入恢复模式，恢复模式需要重新选举出一个新的 leader，让所有的 server 都恢复到一个正确的状态
 
-    
 
 ### Kafka
+
+1. Kafka 是什么
+
+   Kafka 是一种高吞吐量、分布式、基于发布/订阅的消息系统，最初由 LinkedIn 公司开发，使用Scala 语言编写，目前是 Apache 的开源项目
+
+   1. broker： Kafka 服务器，负责消息存储和转发
+   2. topic：消息类别， Kafka 按照 topic 来分类消息
+   3. partition： topic 的分区，一个 topic 可以包含多个 partition， topic 消息保存在各个partition 上
+   4. offset：消息在日志中的位置，可以理解是消息在 partition 上的偏移量，也是代表该消息的唯一序号
+   5. Producer：消息生产者
+   6. Consumer：消息消费者
+   7. Consumer Group：消费者分组，每个 Consumer 必须属于一个 group
+   8. Zookeeper：保存着集群 broker、 topic、 partition 等 meta 数据；另外，还负责 broker 故障发现， partition leader 选举，负载均衡等功能
+
+2. partition 的数据文件（offset， MessageSize， data）
+
+   ###### offset
+
+    offset 表示 Message 在这个 partition 中的偏移量， offset 不是该 Message partition 数据文件中的实际存储位置，而是逻辑上一个值，它唯一确定了 partition 中的一条 Message，可以认为 offset 是partition 中 Message 的 id
+
+   ###### MessageSize
+
+   MessageSize 表示消息内容 data 的大小
+
+   ###### data
+
+   data 为 Message 的具体内容
+
+3. partition 会均衡分布到不同 broker 上
+
+   由于消息 topic 由多个 partition 组成， 且 partition 会均衡分布到不同 broker 上，因此，为了有效利用 broker 集群的性能，提高消息的吞吐量， producer 可以通过随机或者hash 等方式，将消息平均发送到多个 partition 上，以实现负载均衡
+
+4. 压缩（GZIP 或 Snappy）
+
+   Producer 端可以通过 GZIP 或 Snappy 格式对消息集合进行压缩。 Producer 端进行压缩之后，在Consumer 端需进行解压。压缩的好处就是减少传输的数据量，减轻对网络传输的压力，在对大数据处理上，瓶颈往往体现在网络上而不是 CPU（压缩和解压会耗掉部分 CPU 资源）
+
+5. Zookeeper 对于 Kafka 的作用是什么
+
+   Zookeeper 是一个开放源码的、高性能的协调服务，它用于 Kafka 的分布式应用。Zookeeper 主要用于在集群中不同节点之间进行通信
+
+   在 Kafka 中，它被用于提交偏移量，因此如果节点在任何情况下都失败了，它都可以从之前提交的偏移量中获取
+   除此之外，它还执行其他活动，如: leader 检测、分布式同步、配置管理、识别新节点何时离开或连接、集群、节点实时状态等等
+
+6. Kafka 判断一个节点是否还活着有那两个条件
+
+   1. 节点必须可以维护和 ZooKeeper 的连接，Zookeeper 通过心跳机制检查每个节点的连接
+   2. 如果节点是个 follower,他必须能及时的同步 leader 的写操作，延时不能太久
+
+7. Kafka 与传统 MQ 消息系统之间的关键区别
+
+   1. Kafka 持久化日志，这些日志可以被重复读取和无限期保留
+   2. Kafka 是一个分布式系统：它以集群的方式运行，可以灵活伸缩，在内部通过复制数据提升容错能力和高可用性
+   3. Kafka 支持实时的流式处理
+
+8. 消费者故障，出现活锁问题如何解决
+
+   出现 “活锁 ” 的情 况， 是由于持续 的发 送心 跳， 但是 没有 处理 。为 了预 防消 费者 在这种 情况 下一 直持有分 区，我们 使用 max.poll.interval.ms 活跃 检测 机制 。 在此基础上， 如果 你调 用的 poll 的频 率大 于最 大间 隔， 则客 户端 将主 动地 离开 组， 以便其 他消 费者 接管 该分 区。 发生 这种 情况 时， 你会 看到 offset 提交 失败 （调 用commitSync（） 引发 的 CommitFailedException）。 这是 一种 安全 机制 ，保 障只有 活动 成员 能够 提交 offset。所 以要 留在 组中 ，你 必须 持续 调用 poll
+
+   消费者提供两个配置设置来控制 poll 循环：
+   max.poll.interval.ms：增大 poll 的间 隔 ，可以 为消 费者 提供 更多 的时 间去 处理 返回的 消息（调用 poll(long)返回 的消 息，通常 返回 的消 息都 是一 批）。缺点 是此 值越大 将会 延迟 组重 新平 衡。
+   max.poll.records：此 设置 限制 每次 调用 poll 返回 的消 息数 ，这 样可 以更 容易 的预测 每次 poll 间隔 要处 理的 最大 值。通过 调整 此值 ，可以 减少 poll 间隔 ，减少 重新平 衡分 组的
+
+   对于 消息 处理 时间 不可 预测 地的 情况 ，这些 选项 是不 够的 。 处理 这种 情况 的推 荐方法 是将 消息 处理 移到 另一 个线 程中 ，让消 费者 继续 调用 poll。 但是 必须 注意
+   确保已 提交 的 offset 不超 过实 际位 置。 另外 ，你 必须 禁用 自动 提交 ，并 只有 在线 程完成 处理 后才 为记 录手 动提 交偏 移量（取决 于你 ）。 还要 注意 ，你需 要 pause暂停分 区， 不会 从 poll 接收 到新 消息 ，让 线程 处理 完之 前返 回的 消息 （如 果你 的处理能 力比 拉取 消息 的慢 ，那 创建 新线 程将 导致 你机 器内 存溢 出）
+
+   
 
 ### Redis
 
