@@ -2716,9 +2716,121 @@
 
 ### 设计模式
 
+
+
 ### Nginx
 
+1. 什么是nginx
+
+   nginx 是一个web 服务器和反向代理服务器 用于HTTP HTTPS SMTP POP3 和IMAP 协议
+
+2. nginx 的特性
+
+   - 反向代理/ L7 负载均衡
+   - 嵌入式 Perl 解释器
+   - 动态二进制升级
+   - 可用于重新编写URL ，具有非常好的PCRE 支持
+
+3. 请解释Nginx 如果处理HTTP 请求
+
+   Nginx 使用反应器模式，主事件循环等待操作系统发出准备事件的信号，这样数据就可以从套接字读取。 在该实例中读取到缓冲区并进行处理，单个线程可以提供数万个并发连接
+
+4. 使用反向代理服务器的优点是什么
+
+   反向代理服务器可以隐藏资源服务器的存在和特征，它充当互联网云和web 服务器之间的中间层。 这对安全方面来说是很好的。特别是使用web 托管服务时
+
+5. nginx 服务器的用途
+
+   nginx 服务器的最佳用法是在网络商部署动态HTTP 内容， 使用SCGI WSGI 应用程序服务器，用于脚本的FastCGI 处理程序。 还可以作为负载均衡器
+
+6. nginx  服务器上的master 和worker 进程分别是什么
+
+   - master 进程  ：  读取及评估配置和维持
+   - worker进程：  处理请求
+
+7. 是否可能讲nginx 的错误替换为502 503 错误
+
+   502 === 错误网关 
+
+   503 === 服务器超载
+
+   有可能， 需要确保 fastcgi_intercept_errors 被设置为 ON，并使用错误页面指令
+
+   Location / {fastcgi_pass 127.0.01:9001;fastcgi_intercept_errorson;error_page 502 =503/error_page.html;#…}
+
+8. 请解释  ngx_http_upstream_module  的作用是什么
+
+   ngx_http_upstream_module 用于定义可通过 fastcgi 传递、proxy 传递、uwsgi传递、memcached 传递和 scgi 传递指令来引用的服务器组
+
+9. 请解释什么是 C10K  问题
+
+   C10K 问题是指无法同时处理大量客户端(10,000)的网络套接字
+
+10. 解释 x Nginx  是否支持将请求压缩到上游
+
+    您可以使用 Nginx 模块 gunzip 将请求压缩到上游。gunzip 模块是一个过滤器，它可以对不支持“gzip”编码方法的客户机或服务器使用“内容编码:gzip”来解压缩响应
+
+11. 
+
 ### Tomcat
+
+1. Tomcat  的缺省端口是多少，怎么修改
+
+   修改 conf/server.xml 下的 Connector  节点，修改 port
+
+2. tomcat  部署方式
+
+   1. 直接把web 项目放在webapps  下，tomcat 会自动将其部署
+   2. 在server.xml 文件上配置<Context> 节点。设置相关属性即可
+   3. 通过Catalina  进行配置，进入到conf/Catalina/localhost 文件下，创建一个xml 文件，该文件的名字就是站点的名字
+
+3. tomcat 容器是如何创建 servlet 类实例，用到什么原理
+
+   当容器启动时，会读取在webapps  目录下所有的web 应用中的web.xml 文件，然后对xml 进行解析。 并且读取servlet 注册信息，然后，将每个应用中注册的servlet  类都进行加载。 并通过反射的方式实例化
+
+4. tomcat如何优化
+
+   
+
+5. 内存调优
+
+   内存方式的设置是在 catalina.sh 中，调整一下 JAVA_OPTS 变量即可，因为后面的启动参数会把 JAVA_OPTS 作为 JVM 的启动参数来处理
+
+   具体设置如下：
+   JAVA_OPTS="$JAVA_OPTS  -Xmx3550m  -Xms3550m  -Xss128k  -XX:NewRatio=4 -XX:SurvivorRatio=4"
+
+   其各项参数如下：
+
+   -Xmx3550m：设置 JVM 最大可用内存为 3550M
+
+   -Xms3550m：设置 JVM 初始内存为 3550m。此值可以设置与-Xmx 相同，以避免每次垃圾回收完成后 JVM 重新分配内存
+
+   -Xmn2g：设置年轻代大小为 2G。整个堆大小=年轻代大小 + 年老代大小 +持久代大小。持久代一般固定大小为 64m，所以增大年轻代后，将会减小年老代大小。此值对系统性能影响较大，Sun 官方推荐配置为整个堆的 3/8
+
+   -Xss128k：设置每个线程的堆栈大小。JDK5.0 以后每个线程堆栈大小为 1M，以前每个线程堆栈大小为 256K。更具应用的线程所需内存大小进行调整。在相同物理内存下，减小这个值能生成更多的线程。但是操作系统对一个进程内的线程数还是有限制的，不能无限生成
+
+   -XX:NewRatio=4:设置年轻代（包括 Eden 和两个 Survivor 区）与年老代的比值（除去持久代）。设置为 4，则年轻代与年老代所占比值为 1：4，年轻代占整个堆栈的 1/5
+
+   -XX:MaxPermSize=16m:设置持久代大小为 16m。
+   -XX:MaxTenuringThreshold=0：设置垃圾最大年龄。如果设置为 0 的话，则年轻代对象不经过 Survivor 区，直接进入年老代。对于年老代比较多的应用，可以提高效率。如果将此值设置为一个较大值，则年轻代对象会在 Survivor 区进行多次复制，这样可以增加对象再年轻代的存活时间，增加在年轻代即被回收的概论
+
+6. tomcat 一个请求的完整过程
+
+   1. 请求被发送到本机端口 8080，被在那里侦听的 Coyote  HTTP/1.1Connector 获得
+   2. Connector 把该请求交给它所在的 Service 的 Engine 来处理，并等待来自Engine 的回应
+   3. Engine 获得请求路径localhost/demo/1，匹配它所拥有的所有虚拟主机 Host
+   4. Engine 匹配到名为 localhost 的 Host（即使匹配不到也把请求交给该 Host处理，因为该 Host 被定义为该 Engine 的默认主机）
+   5. localhost Host 获得请求/demo/1，匹配它所拥有的所有 Context
+   6. Host 匹配到路径为/demo 的 Context（如果匹配不到就把该请求交给路径名为”“的 Context 去处理
+   7. path=”/demo”的 Context 获得请求/1，在它的 mapping table 中寻找对应的 servlet
+   8. Context 匹配到 对应的 servlet 类
+   9. 构造 HttpServletRequest 对象和 HttpServletResponse 对象，作为参数调用Servlet 的 doGet 或 doPost 方法
+   10. Context 把执行完了之后的 HttpServletResponse 对象返回给 Host
+   11. Host 把 HttpServletResponse 对象返回给 Engine
+   12. Engine 把 HttpServletResponse 对象返回给 Connector
+   13. Connector 把 HttpServletResponse 对象返回给客户 browser
+
+7. 
 
 
 
