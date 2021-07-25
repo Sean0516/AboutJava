@@ -383,7 +383,33 @@
 
     java.util 包下面的所有的集合类都是快速失败的，而 java.util.concurrent 包下面的所有的类都是安全失败的。快速失败的迭代器会抛出ConcurrentModificationException 异常，而安全失败的迭代器永远不会抛出这样的异常
 
-13. 
+13. ArrayList,Vector, LinkedList 的存储性能和特性
+
+    ArrayList 和 Vector 都是使用数组方式存储数据，此数组元素数大于实际存储的数
+    据以便增加和插入元素，它们都允许直接按序号索引元素，但是插入元素要涉及数组
+    元素移动等内存操作，所以索引数据快而插入数据慢，Vector 由于使用了synchronized 方法（线程安全）。通常性能上较 ArrayList 差
+
+    LinkedList 使用双向链表实现存储，按序号索引数据需要进行前向或后向遍历，但是插入数据时只需要记录本项的前后项即可，所以插入速度较快
+
+    ArrayList 在查找时速度快，LinkedList 在插入与删除时更具优势
+
+14.  Hashmap 什么时候进行扩容呢
+
+    当 hashmap 中的元素个数超过数组大小 loadFactor 时，就会进行数组扩容loadFactor 的默认值为 0.75，也就是说，默认情况下，数组大小为 16，那么当hashmap 中元素个数超过 16 0.75=12 的时候，就把数组的大小扩展为 2 16=32，即扩大一倍，然后重新计算每个元素在数组中的位置，而这是一个非常消耗性能的操作，所以如果我们已经预知 hashmap 中元素的个数，那么预设元素的个数能够有效的提高 hashmap 的性能。比如说，我们有 1000 个元素 new HashMap(1000),但是理论上来newHashMap(1024) 更合适，不过上面已经说过，即使是 1000，hashmap 也自动会将其设置为 1024。 但是 new HashMap(1024) 还不是更合适的，因为 0.75*1000 < 1000, 也就是说为了让 0.75 * size > 1000, 我们必须这样 new HashMap(2048) 才最合适，既考虑了 & 的问题，也避免了 resize的问题
+
+15.  LinkedHashMap 的实现原理
+
+    LinkedHashMap 也是基于 HashMap 实现的，不同的是它定义了一个 Entry header，这个 header 不是放在 Table 里，它是额外独立出来的。LinkedHashMap 通过继承 hashMap 中的 Entry, 并添加两个属性 Entrybefore,after, 和 header 结合起来组成一个双向链表，来实现按插入顺序或访问顺序排序。LinkedHashMap 定义了排序模式 accessOrder，该属性为 boolean 型变量，对于访问顺序，为 true；对于插入顺序，则为 false。一般情况下，不必指定排序模式，其迭代顺序即为默认为插入顺序
+
+16. Iterator 和 ListIterator 的区别是什么
+
+    Iterator 可用来遍历 Set 和 List 集合，但是 ListIterator 只能用来遍历 List。
+
+    Iterator 对集合只能是前向遍历，ListIterator 既可以前向也可以后向。
+
+    ListIterator 实现了 Iterator 接口，并包含其他的功能，比如：增加元素，替换元素，获取前一个和后一个元素的索引，等等
+
+17. 
 
 
 
@@ -594,7 +620,7 @@
 
    1. 最大区别就是对于Synchronized来说，它是java语言的关键字，是原生语法层面的互斥，需要jvm实现。而ReentrantLock它是JDK 1.5之后提供的API层面的互斥锁，需要lock()和unlock()方法配合try/finally语句块来完成
    2. Synchronized进过编译，会在同步块的前后分别形成monitorenter和monitorexit这个两个字节码指令。在执行monitorenter指令时，首先要尝试获取对象锁。如果这个对象没被锁定，或者当前线程已经拥有了那个对象锁，把锁的计算器加1，相应的，在执行monitorexit指令时会将锁计算器就减1，当计算器为0时，锁就被释放了。如果获取对象锁失败，那当前线程就要阻塞，直到对象锁被另一个线程释放为止 
-   3. ，相比Synchronized，ReentrantLock类提供了一些高级功能，主要有以下3项
+   3. 相比Synchronized，ReentrantLock类提供了一些高级功能，主要有以下3项
       - 等待可中断，持有锁的线程长期不释放的时候，正在等待的线程可以选择放弃等待，这相当于Synchronized来说可以避免出现死锁的情况
       - 公平锁，多个线程等待同一个锁时，必须按照申请锁的时间顺序获得锁，Synchronized锁非公平锁，ReentrantLock默认的构造函数是创建的非公平锁，可以通过参数true设为公平锁，但公平锁表现的性能不是很好
       - 锁绑定多个条件，一个ReentrantLock对象可以同时绑定对个对象
@@ -1320,7 +1346,9 @@
 
    @Autowired 可以更准确地控制应该在何处以及如何进行自动装配。此注解用于在 setter 方法，构造函数，具有任意名称或多个参数的属性或方法上自动装配bean。默认情况下，它是类型驱动的注入
 
-9. @Qualifier 注解有什么用当您创建多个相同类型的 bean 并希望仅使用属性装配其中一个 bean 时，您可以使用@Qualifier 注解和 @Autowired 通过指定应该装配哪个确切的 bean来消除歧义
+9. @Qualifier 注解有什么用
+
+   当您创建多个相同类型的 bean 并希望仅使用属性装配其中一个 bean 时，您可以使用@Qualifier 注解和 @Autowired 通过指定应该装配哪个确切的 bean来消除歧义
 
 10. @RequestMapping 注解有什么用
 
@@ -1393,7 +1421,7 @@
 16. 哪些是重要的 bean 生命周期方法？
 
     有两个重要的 bean 生命周期方法，第一个是 setup ， 它是在容器加载 bean的时候被调用。第二个方法是 teardown 它是在容器卸载类的时候被调用。The bean 标签有两个重要的属性（init-method 和 destroy-method）。用它们你可以自己定制初始化和注销方法。它们也有相应的注解（@PostConstruct 和@PreDestroy）
-    
+
 17. spring 中的事件
 
     1. 上下文更新事件（ContextRefreshedEvent）：该事件会在 ApplicationContext 被初始化或者更新时发布。也可以在调用 ConfigurableApplicationContext 接口中的 refresh()方法时被触发
@@ -1517,7 +1545,9 @@
 
 ### Zookeeper 
 
-1. ZooKeeper 是一个开放源码的分布式协调服务，它是集群的管理者，监视着集群中各个节点的状态根据节点提交的反馈进行下一步合理操作。最终，将简单易用的接口和性能高效、功能稳定的系统提供给用户。分布式应用程序可以基于 Zookeeper 实现诸如数据发布/订阅、负载均衡、命名服务、分布式协调/通知、集群管理Master 选举、分布式锁和分布式队列等功能
+1. ZooKeeper 是什么
+
+   是一个开放源码的分布式协调服务，它是集群的管理者，监视着集群中各个节点的状态根据节点提交的反馈进行下一步合理操作。最终，将简单易用的接口和性能高效、功能稳定的系统提供给用户。分布式应用程序可以基于 Zookeeper 实现诸如数据发布/订阅、负载均衡、命名服务、分布式协调/通知、集群管理Master 选举、分布式锁和分布式队列等功能
 
 2. Zookeeper 文件系统
 
@@ -1653,7 +1683,7 @@
 
     zookeeper 采用了全局递增的事务 Id 来标识，所有的 proposal（提议）都在被提出的时候加上了 zxid，zxid 实际上是一个 64 位的数字，高 32 位是 epoch（时期; 纪元; 世; 新时代）用来标识 leader 周期，如果有新的 leader 产生出来，epoch会自增，低 32 位用来递增计数。当新产生 proposal 的时候，会依据数据库的两阶段过程，首先会向其他的server 发出事务执行请求，如果超过半数的机器都能执行并且能够成功，那么就会开始执行
 
-16. zk 节点宕机如何处理、
+16. zk 节点宕机如何处理
 
     Zookeeper 本身也是集群，推荐配置不少于 3 个服务器。Zookeeper 自身也要保证当一个节点宕机时，其他节点会继续提供服务。
 
@@ -1665,7 +1695,7 @@
     所以3 个节点的 cluster 可以挂掉 1 个节点(leader 可以得到 2 票>1.5)
     2 个节点的 cluster 就不能挂掉任何 1 个节点了(leader 可以得到 1 票<=1)
 
-17. 分布式集群中为什么会有 Master、
+17. 分布式集群中为什么会有 Master
 
     在分布式环境中，有些业务逻辑只需要集群中的某一台机器进行执行，其他的机器可以共享这个结果，这样可以大大减少重复计算，提高性能，于是就需要进行leader 选举
 
@@ -1691,7 +1721,7 @@
     6. Leader 根据 follower 的 zxid 确定同步点，至此选举阶段完成。
     7. 选举阶段完成 Leader 同步后通知 follower 已经成为 uptodate 状态
     8. Follower 收到 uptodate 消息后，又可以重新接受 client 的请求进行服务
-    
+
 21. Zookeeper 工作原理（原子广播）
 
     1. Zookeeper 的核心是原子广播，这个机制保证了各个 server 之间的同步。实现这个机制的协议叫做 Zab 协议。 Zab 协议有两种模式，它们分别是恢复模式和广播模式。
@@ -1792,15 +1822,24 @@
     对于 消息 处理 时间 不可 预测 地的 情况 ，这些 选项 是不 够的 。 处理 这种 情况 的推 荐方法 是将 消息 处理 移到 另一 个线 程中 ，让消 费者 继续 调用 poll。 但是 必须 注意
     确保已 提交 的 offset 不超 过实 际位 置。 另外 ，你 必须 禁用 自动 提交 ，并 只有 在线 程完成 处理 后才 为记 录手 动提 交偏 移量（取决 于你 ）。 还要 注意 ，你需 要 pause暂停分 区， 不会 从 poll 接收 到新 消息 ，让 线程 处理 完之 前返 回的 消息 （如 果你 的处理能 力比 拉取 消息 的慢 ，那 创建 新线 程将 导致 你机 器内 存溢 出）
 
-    
+13. 上千万条消息在mq中积压了了⼏几个⼩小时还没解决
 
-    
+    1. 先修复consumer的问题，确保其恢复消费速度，然后将现有consumer都停掉
+    2. 新建⼀一个topic，partition是原来的10倍，临时建⽴立好原先10倍或者20倍的queue数量量
+    3. 然后写一个临时的分发数据的consumer程序，这个程序部署上去消费积压的数据.消费之后不不做耗时的处理理，直接均匀轮询写⼊入临时建⽴立好的10倍数量量的queue
+    4. 接着临时征用10倍的机器器来部署consumer，每⼀一批consumer消费⼀一个临时queue的数据
+    5. 这种做法相当于是临时将queue资源和consumer资源扩⼤大10倍，以正常的10倍速度来消费数据
+    6. 等快速消费完积压数据之后，得恢复原先部署架构，重新⽤用原先的consumer机器器来消费消息 
 
-    
+    总结：
+    1. 修复并停掉consumer；
+    2. 新建一个topic，partition是原来的10倍，建⽴立临时queue，数量量是原来的10倍或20倍；
+    3. 写临时consumer程序，临时征⽤用10倍的机器器去消费数据；
+    4. 消费完成之后，恢复原先consumer
 
-    
+14. 
 
-    
+
 
 ### Redis
 
@@ -2831,6 +2870,97 @@
    13. Connector 把 HttpServletResponse 对象返回给客户 browser
 
 7. 
+
+### Netty
+
+1. netty 的特点
+
+   一个高性能，异步事件驱动的NIO 框架，他提供了对TCP ，UDP 和文件传输的支持，使用更高效的socket 底层。对epoll 空轮询引起的cpu 占用飙升在内部进行了处理，避免了直接使用NIO 的陷阱，简化了NIO 的处理方式
+
+   采用多种decoder / encoder 支持，对TCP 粘包和分包进行自动化处理
+
+   可以使用接受/初始线程池，提高连接效率，对重连，心跳检测的简单支持
+
+   可配置IO 线程数，TCP 参数，TCP 接受和发送缓冲区使用直接内存代替堆内存，通过内存池的方式循环利用ByteBuf 
+
+   通过引用计数器及时申请释放不再引用的对象，降低GC 频率
+
+   使用单线程串行化的方式吗，高效的Reactor 线程模型
+
+   大量使用了volitale ，使用了CAS 和原子类，线程安全类的使用，读写锁的使用。
+
+   
+
+2. netty 的线程模型 
+
+   netty 通过Reactor 模型，基于多路复用接收器接收并处理用户请求， 内部实现了两个线程池
+
+   boss 线程池和work 线程池。其中boss 线程池的线程负责处理请求的accept 事件，当接受到accept 事件的请求时，把对应的socket 封装到一个NioSocketChannel 中，并交给work 线程，其中work 线程池负责请求的read 和write 事件 ，由对应的handler 处理
+
+   ######  单线程模型
+
+   所有的I/O操作都由一个线程完成。即多路复用，事件分发和处理都在一个Reactor 线程完成，既要接受客户端的连接请求，向服务端发起连接，又要发送/读取请求或应当/响应消息。 一个NIO 线程同时处理成百上千的链路，性能上无法支持，速度慢，若线程进入死循环，整个程序不可用，对高负载，大并发的应用场景不适合
+
+   ###### 多线程模型 
+
+   有一个NIO 线程只负责监听服务端，接收客户端的TCP连接请求。 NIO 线程池负责网络IO 的操作， 即数据的读取，解码，编码和发送。 一个NIO 线程可以同时处理N 条链路，但是一个链路只对应一个NIO 线程，这是为了防止发生并发操作问题。 但在并发百万客户端连接或需要安全认证时，一个Acceptor 线程可能会存在性能不足问题
+
+   ###### 主从多线程模型  
+
+   Acceptor 线程用于绑定监听端口，接收客户端连接，将SocketChannel 从主线程池的Reactor 线程的多路复用器上移除，重新注册到Sub 线程池的线程上，用于处理I/O 的读写操作，从而保证main Reactor 只负责认证，握手等操作
+
+3. TCP 粘包/ 拆包的原因及解决方法
+
+   TCP 是以流的方式来处理数据，一个完整的包可能会被TCP 拆分成多个包进行发送，也可能把小的封装成一个大的数据包发送。
+
+   ###### TCP/ 粘包/分包的原因
+
+   应用程序写入的字节大小大于套接字发送缓冲区的大小，会发生拆包现象，而应用程序写入数据小于套接字缓冲区大小，网卡将应用多次写入的数据发送到网络上，这将发生粘包现象
+
+   ###### 解决方法
+
+   消息定长： FixedLengthFrameDecoder 类
+
+   包尾增加特殊字符分割： 行分隔符类  LineBaseFrameDecoder 或者自定义分隔符类。 DelimiterBaseFrameDecoder 
+
+   将消息分割消息头和消息体  LengthFieldBaseFrameDecoder 类，分为有头部的拆包和粘包，长度字段在前且有头部的拆包和粘包，多扩展头部的拆包与粘包
+
+4. Netty 的零拷贝实现
+
+   Netty 的接受和发送ByteBuffer 采用DIRECT BUFFERS 。 使用堆外直接内存进行socket 读写，不需要进行字节缓冲区的二次拷贝，堆内存多了一个内存拷贝，JVM 会将堆内存 Buffer 拷贝一份到直接内存中，然后才写入Socket 中，ByteBuffer 由 ChannelConfig  分配， 而ChannelConfig 创建ByteBufAllocator 默认使用Direct Buffer 
+
+   CompositeByteBuf 类可以将多个 ByteBuf 合并为一个逻辑上的 ByteBuf, 避免了传统通过内存拷贝的方式将几个小 Buffer 合并成一个大的 Buffer。addComponents 方法将  header与 body 合并为一个逻辑上的 ByteBuf, 这两个 ByteBuf 在 CompositeByteBuf 内部都是单独存在的, CompositeByteBuf 只是逻辑上是一个整体
+
+   通过 FileRegion 包装的 FileChannel.tranferTo 方法 实现文件传输, 可以直接将文件缓冲区的数据发送到目标 Channel，避免了传统通过循环 write 方式导致的内存拷贝问题
+
+   通过  wrap 方法,  我们可以将  byte[]  数组、ByteBuf、ByteBuffer 等包装成一个  NettyByteBuf 对象, 进而避免了拷贝操作
+
+5. Netty 的高性能表现在哪些方面
+
+   1. 心跳  
+
+      对服务端：会定时清除闲置会话 inactive(netty5)，对客户端:用来检测会话是否断开，是否重来，检测网络延迟，其中 idleStateHandler 类 用来检测会话状态
+
+   2. 串行无锁化设计
+
+      即消息的处理尽可能在同一个线程内完成，期间不进行线程切换，这样就避免了多线程竞争和同步锁。表面上看，串行化设计似乎 CPU 利用率不高，并程度不够。但是，通过调整 NIO 线程池的线程参数，可以同时启动多个串行化的线程并行运行，
+      这种局部无锁化的串行线程设计相比一个队列-多个工作线程模型性能更优
+
+   3. 可靠性，链路有效性检测
+
+      链路空闲检测机制，读/写空闲超时机制；内存保护机制：通过内存池重用ByteBuf;ByteBuf 的解码保护；优雅停机：不再接收新消息、退出前的预处理操作、资源的释放操作
+
+   4. 安全性
+
+      SSL V2 和 V3，TLS，SSL 单向认证、双向认证和第三方 CA认证
+
+   5. 高效并发编程的体现
+
+      volatile 的大量、正确使用；CAS 和原子类的广泛使用；线程安全容器的使用；通过读写锁提升并发性能。IO 通信性能三原则：传输（AIO）、协议（Http）、线程（主从多线程）
+
+   6. 流量整型的作用
+
+      防止由于上下游网元性能不均衡导致下游网元被压垮，业务流中断；防止由于通信模块接受消息过快，后端业务线程处理不及时导致撑死问题
 
 
 
