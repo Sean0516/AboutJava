@@ -864,7 +864,9 @@
 
 16. ThreadLocal原理
 
-    1. 
+    1. Thread类有一个类型为ThreadLocal.ThreadLocalMap的实例变量threadLocals，即每个线程都有一个属于自己的ThreadLocalMap
+    2. ThreadLocalMap内部维护着Entry数组，每个Entry代表一个完整的对象，key是ThreadLocal本身，value是ThreadLocal的泛型值
+    3. 每个线程在往ThreadLocal里设置值的时候，都是往自己的ThreadLocalMap里存，读也是以某个ThreadLocal作为引用，在自己的map里找对应的key，从而实现了线程隔离
 
 17. ThreadLocal 是 怎 么 解 决 并 发 安 全 的
 
