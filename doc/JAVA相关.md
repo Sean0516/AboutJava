@@ -768,13 +768,17 @@
    3. 在调用 sleep()方法的过程中， 线程不会释放对象锁
    4. 而当调用 wait()方法的时候，线程会放弃对象锁，进入等待此对象的等待锁定池，只有针对此对象调用 notify()方法后本线程才进入对象锁定池准备获取对象锁进入运行状态
 
-5. interrupted 和 isInterruptedd方法的区别
+5. Thread.sleep(0)的作用是什么
+
+   由于Java采用抢占式的线程调度算法，因此可能会出现某条线程常常获取到CPU控制权的情况，为了让某些优先级比较低的线程也能获取到CPU控制权，可以使用Thread.sleep(0)手动触发一次操作系统分配时间片的操作，这也是平衡CPU控制权的一种操作
+
+6. interrupted 和 isInterruptedd方法的区别
 
    1. interrupted() 和 isInterrupted()的主要区别是前者会将中断状态清除而后者不会。Java多线程的中断机制是用内部标识来实现的，调用Thread.interrupt()来中断一个线程就会设置中断标识为true
    2. 当中断线程调用静态方法Thread.interrupted()来检查中断状态时，中断状态会被清零
    3. 而非静态方法isInterrupted()用来查询其它线程的中断状态且不会改变中断状态标识。简单的说就是任何抛出InterruptedException异常的方法都会将中断状态清零。无论如何，一个线程的中断状态有有可能被其它线程调用中断来改变
 
-6. synchronized 和 ReentrantLock 有什么不同
+7. synchronized 和 ReentrantLock 有什么不同
 
    1. 最大区别就是对于Synchronized来说，它是java语言的关键字，是原生语法层面的互斥，需要jvm实现。而ReentrantLock它是JDK 1.5之后提供的API层面的互斥锁，需要lock()和unlock()方法配合try/finally语句块来完成
    2. Synchronized进过编译，会在同步块的前后分别形成monitorenter和monitorexit这个两个字节码指令。在执行monitorenter指令时，首先要尝试获取对象锁。如果这个对象没被锁定，或者当前线程已经拥有了那个对象锁，把锁的计算器加1，相应的，在执行monitorexit指令时会将锁计算器就减1，当计算器为0时，锁就被释放了。如果获取对象锁失败，那当前线程就要阻塞，直到对象锁被另一个线程释放为止 
@@ -783,21 +787,21 @@
       - 公平锁，多个线程等待同一个锁时，必须按照申请锁的时间顺序获得锁，Synchronized锁非公平锁，ReentrantLock默认的构造函数是创建的非公平锁，可以通过参数true设为公平锁，但公平锁表现的性能不是很好
       - 锁绑定多个条件，一个ReentrantLock对象可以同时绑定对个对象
 
-7. 如何保证多个线程顺序执行
+8. 如何保证多个线程顺序执行
 
    在多线程中有多种方法让线程按特定顺序执行，你可以用线程类的join()方法在一个线程中启动另一个线程，另外一个线程完成该线程继续执行。
 
-8. SynchronizedMap和ConcurrentHashMap有什么区别
+9. SynchronizedMap和ConcurrentHashMap有什么区别
 
    SynchronizedMap()和Hashtable一样，实现上在调用map所有方法时，都对整个map进行同步。而ConcurrentHashMap的实现却更加精细，它对map中的所有桶加了锁。所以，只要有一个线程访问map，其他线程就无法进入map，而如果一个线程在访问ConcurrentHashMap某个桶时，其他线程，仍然可以对map执行某些操作。
 
    所以，ConcurrentHashMap在性能以及安全性方面，明显比Collections.synchronizedMap()更加有优势。同时，同步操作精确控制到桶，这样，即使在遍历map时，如果其他线程试图对map进行数据修改，也不会抛出ConcurrentModificationException
 
-9. Thread类中的yield方法有什么作用
+10. Thread类中的yield方法有什么作用
 
    Yield方法可以暂停当前正在执行的线程对象，让其它有相同优先级的线程执行。它是一个静态方法而且只保证当前线程放弃CPU占用而不能保证使其它线程一定能占用CPU，执行yield()的线程有可能在进入到暂停状态后马上又被执行
 
-10. 说说自己是怎么使用 synchronized 关键字
+11. 说说自己是怎么使用 synchronized 关键字
 
     修饰实例方法: 作用于当前对象实例加锁，进入同步代码前要获得当前对象实例的锁
 
@@ -805,7 +809,7 @@
 
     修饰代码块: 指定加锁对象，对给定对象加锁，进入同步代码库前要获得给定对象的锁。
 
-11. volatile关键字的作用
+12. volatile关键字的作用
 
     一旦一个共享变量（类的成员变量、类的静态成员变量）被volatile修饰之后，那么就具备了两层语义：
 
@@ -818,7 +822,7 @@
     - volatile不会造成线程的阻塞；synchronized可能会造成线程的阻塞
     - volatile标记的变量不会被编译器优化；synchronized标记的变量可以被编译器优化
 
-12. volatile如何保 证 变 量 对 所 有 线程 的 可 见 性 
+13. volatile如何保 证 变 量 对 所 有 线程 的 可 见 性 
 
     Java 的 内 存 模 型 定 义 了 8 种 内 存 间 操 作
 
@@ -846,7 +850,7 @@
 
     
 
-13. Synchronized 同步锁
+14. Synchronized 同步锁
 
     Synchronized 是 由 JVM 实 现 的 一 种 实 现 互 斥 同 步 的 一 种 方 式 ， 如 果你 查 看 被  Synchronized  修 饰 过 的 程 序 块 编 译 后 的 字 节 码 ， 会 发 现 ，被  Synchronized  修 饰 过 的 程 序 块 ， 在 编 译 前 后 被 编 译 器 生 成 了monitorenter 和 monitorexit 两 个 字 节 码 指 令
 
@@ -854,18 +858,26 @@
 
     Java  中  Synchronize  通 过 在 对 象 头 设 置 标 记 ， 达 到 了 获 取 锁 和 释 放锁 的 目 的
 
-14. ThreadLocal 是 怎 么 解 决 并 发 安 全 的
+15. ThreadLocal是什么
+
+    即线程本地变量。如果你创建了一个ThreadLocal变量，那么访问这个变量的每个线程都会有这个变量的一个本地拷贝，多个线程操作这个变量的时候，实际是操作自己本地内存里面的变量，从而起到线程隔离的作用，避免了线程安全问题
+
+16. ThreadLocal原理
+
+    1. 
+
+17. ThreadLocal 是 怎 么 解 决 并 发 安 全 的
 
     ThreadLocal 这 是 Java 提 供 的 一 种 保 存 线 程 私 有 信 息 的 机 制 ， 因 为其 在 整 个 线 程 生 命 周 期 内 有 效 ， 所 以 可 以 方 便 地 在 一 个 线 程 关 联 的 不 同业 务 模 块 之 间 传 递 信 息 ， 比 如 事 务 ID、 Cookie 等 上 下 文 相 关 信 息 ThreadLocal 为 每 一 个 线 程 维 护 变 量 的 副 本 ， 把 共 享 数 据 的 可 见 范 围 限制 在 同 一 个 线 程 之 内 ， 其 实 现 原 理 是 ， 在 ThreadLocal 类 中 有 一 个Map， 用 于 存 储 每 一 个 线 程 的 变 量 的 副 本 。
 
-15. 很 多 人 都 说 要 慎 用 ThreadLocal， 谈 谈 你 的 理 解 ， 使 用ThreadLocal 需 要 注 意 些 什 么
+18. 很 多 人 都 说 要 慎 用 ThreadLocal， 谈 谈 你 的 理 解 ， 使 用ThreadLocal 需 要 注 意 些 什 么
 
     ThreadLocal 的 实 现 是 基 于 一 个 所 谓 的 ThreadLocalMap， 在ThreadLocalMap 中 ， 它 的 key 是 一 个 弱 引 用 。通 常 弱 引 用 都 会 和 引 用 队 列 配 合 清 理 机 制 使 用 ， 但 是 ThreadLocal 是个 例 外 ， 它 并 没 有 这 么 做 。
     这 意 味 着 ， 废 弃 项 目 的 回 收 依 赖 于 显 式 地 触 发 ， 否 则 就 要 等 待 线 程 结束 ， 进 而 回 收 相 应 ThreadLocalMap！ 这 就 是 很 多 OOM 的 来 源 ， 所以 通 常 都 会 建 议 ， 应 用 一 定 要 自 己 负 责 remove， 并 且 不 要 和 线 程 池 配合 ， 因 为 worker 线 程 往 往 是 不 会 退 出 的
 
     
 
-16. JVM 对 Java 的 原 生 锁 做 了 哪 些 优 化
+19. JVM 对 Java 的 原 生 锁 做 了 哪 些 优 化
 
     1.  使 用 自 旋 锁 ， 即 在 把 线 程 进 行 阻 塞 操 作 之 前 先 让 线 程 自 旋 等待 一 段 时 间 ， 可 能 在 等 待 期 间 其 他 线 程 已 经 解 锁 ， 这 时 就 无 需 再 让 线 程执 行 阻 塞 操 作 ， 避 免 了 用 户 态 到 内 核 态 的 切 换
 
@@ -887,11 +899,11 @@
 
        轻 量 级 锁 依 赖 CAS 操 作 Mark Word 来 试 图 获 取 锁 ， 如 果 重 试 成 功 ，就 使 用 普 通 的 轻 量 级 锁 ； 否 则 ， 进 一 步 升 级 为 重 量 级 锁 
 
-17. 为什么说 synchronized 是非公平锁
+20. 为什么说 synchronized 是非公平锁
 
     非 公 平 主 要 表 现 在 获 取 锁 的 行 为 上 ， 并 非 是 按 照 申 请 锁 的 时 间 前 后 给 等待 线 程 分 配 锁 的 ， 每 当 锁 被 释 放 后 ， 任 何 一 个 线 程 都 有 机 会 竞 争 到 锁 ，这 样 做 的 目 的 是 为 了 提 高 执 行 性 能 ， 缺 点 是 可 能 会 产 生 线 程 饥 饿 现 象
 
-18.  什 么 是 锁 消 除 和 锁 粗 化
+21. 什 么 是 锁 消 除 和 锁 粗 化
 
     ###### 锁 消 除
 
@@ -903,13 +915,13 @@
 
     
 
-19. ReentrantLock
+22. ReentrantLock
 
-20. ReentrantLock 是 如 何 实 现 可 重 入 性 的 
+23. ReentrantLock 是 如 何 实 现 可 重 入 性 的 
 
     ReentrantLock 内 部 自 定 义 了 同 步 器 Sync（ Sync 既 实 现 了 AQS，又 实 现 了 AOS， 而 AOS 提 供 了 一 种 互 斥 锁 持 有 的 方 式 ） ， 其 实 就 是加 锁 的 时 候 通 过 CAS 算 法 ， 将 线 程 对 象 放 到 一 个 双 向 链 表 中 ， 每 次 获取 锁 的 时 候 ， 看 下 当 前 维 护 的 那 个 线 程 ID 和 当 前 请 求 的 线 程 ID 是 否一 样 ， 一 样 就 可 重 入 了
 
-21. ReadWriteLock 和 StampedLock
+24. ReadWriteLock 和 StampedLock
 
     读 写 锁 基 于 的 原 理 是 多 个 读 操 作 不 需 要 互 斥 ， 如 果 读 锁 试 图 锁 定 时 ， 写锁 是 被 某 个 线 程 持 有 ， 读 锁 将 无 法 获 得 ， 而 只 好 等 待 对 方 操 作 结 束 ， 这样 就 可 以 自 动 保 证 不 会 读 取 到 有 争 议 的 数 据 。
 
@@ -919,14 +931,14 @@
 
     StampedLock， 在 提 供 类 似 读 写 锁 的 同 时 ，还 支 持 优 化 读 模 式 。 优 化 读 基 于 假 设 ， 大 多 数 情 况 下 读 操 作 并 不 会 和 写操 作 冲 突 ， 其 逻 辑 是 先 试 着 修 改 ， 然 后 通 过 validate 方 法 确 认 是 否 进入 了 写 模 式 ， 如 果 没 有 进 入 ， 就 成 功 避 免 了 开 销 ； 如 果 进 入 ， 则 尝 试 获取 读 锁 
 
-22. Condition 类和 Object 类锁方法区别区别
+25. Condition 类和 Object 类锁方法区别区别
 
     1. Condition 类的 awiat 方法和 Object 类的 wait 方法等效
     2. Condition 类的 signal 方法和 Object 类的 notify 方法等效
     3. Condition 类的 signalAll 方法和 Object 类的 notifyAll 方法等效
     4. ReentrantLock 类可以唤醒指定条件的线程，而 object 的唤醒是随机的
 
-23. tryLock 和 lock 和 lockInterruptibly 的区别
+26. tryLock 和 lock 和 lockInterruptibly 的区别
 
     1. tryLock 能获得锁就返回 true，不能就立即返回 false， tryLock(long timeout,TimeUnit
     unit)，可以增加时间限制，如果超过该时间段还没获得锁，返回 false
@@ -934,11 +946,11 @@
     3. lock 和 lockInterruptibly，如果两个线程分别执行这两个方法，但此时中断这两个线程，
     lock 不会抛出异常，而 lockInterruptibly 会抛出异常
 
-24. ReadWriteLock 读写锁
+27. ReadWriteLock 读写锁
 
     为了提高性能， Java 提供了读写锁，在读的地方使用读锁，在写的地方使用写锁，灵活控制，如果没有写锁的情况下，读是无阻塞的,在一定程度上提高了程序的执行效率。 读写锁分为读锁和写锁，多个读锁不互斥，读锁与写锁互斥，这是由 jvm 自己控制的，你只要上好相应的锁即可
 
-25. 共享锁和独占锁  （java 并发包提供的加锁模式分为独占锁和共享锁）
+28. 共享锁和独占锁  （java 并发包提供的加锁模式分为独占锁和共享锁）
 
     ###### 独占锁
 
@@ -948,7 +960,7 @@
 
     共享锁则允许多个线程同时获取锁，并发访问 共享资源，如： ReadWriteLock。 共享锁则是一种乐观锁，它放宽了加锁策略，允许多个执行读操作的线程同时访问共享资源
 
-26. 重量级锁（Mutex Lock）
+29. 重量级锁（Mutex Lock）
 
     Synchronized 是通过对象内部的一个叫做监视器锁（monitor）来实现的。但是监视器锁本质又是依赖于底层的操作系统的 Mutex Lock 来实现的
 
@@ -957,14 +969,14 @@
 
     JDK1.6 以后，为了减少获得锁和释放锁所带来的性能消耗，提高性能，引入了“轻量级锁”和“偏向锁”
 
-27. 轻量级锁
+30. 轻量级锁
 
-28.  Java 中 的 线 程 池 是 如 何 实 现 的 
+31. Java 中 的 线 程 池 是 如 何 实 现 的 
 
     1. 在 Java 中 ， 所 谓 的 线 程 池 中 的 “ 线 程 ” ， 其 实 是 被 抽 象 为 了 一 个 静 态内 部 类  Worker， 它 基 于  AQS  实 现 ， 存 放 在 线 程 池 的HashSet<Worker> workers 成 员 变 量 中 
     2. 而 需 要 执 行 的 任 务 则 存 放 在 成 员 变 量  workQueue（ BlockingQueue<Runnable> workQueue） 中 。这 样 ， 整 个 线 程 池 实 现 的 基 本 思 想 就 是 ： 从  workQueue  中 不 断 取 出需 要 执 行 的 任 务 ， 放 在 Workers 中 进 行 处 理
 
-29. ThreadPoolExecutor 的构造方法
+32. ThreadPoolExecutor 的构造方法
 
     1. corePoolSize：指定了线程池中的线程数量。
     2. maximumPoolSize：指定了线程池中的最大线程数量。
@@ -974,7 +986,7 @@
     6. threadFactory：线程工厂，用于创建线程，一般用默认的即可。
     7. handler：拒绝策略，当任务太多来不及处理，如何拒绝任务。
 
-30. 拒绝策略
+33. 拒绝策略
 
     当线程池中的线程已经用完了，无法继续为新任务服务，同时，等待队列也已经排满了，再也塞不下新任务了。这时候我们就需要拒绝策略机制合理的处理这个问题。JDK 内置的拒绝策略如下
 
@@ -988,7 +1000,7 @@
 
       以上内置拒绝策略均实现了 RejectedExecutionHandler 接口，若以上策略仍无法满足实际需要，完全可以自己扩展 RejectedExecutionHandler 接口。
 
-31. Java 线程池工作过程
+34. Java 线程池工作过程
 
     1. 线程池刚创建时，里面没有一个线程。任务队列是作为参数传进来的。不过，就算队列里面
     有任务，线程池也不会马上执行它们。
@@ -1004,7 +1016,7 @@
     行的线程数大于 corePoolSize，那么这个线程就被停掉。所以线程池的所有任务完成后，它
     最终会收缩到 corePoolSize 的大小。
 
-32. Java 中的阻塞队列
+35. Java 中的阻塞队列
 
     1. ArrayBlockingQueue ：由数组结构组成的有界阻塞队列。 （公平、非公平）
 
@@ -1030,15 +1042,15 @@
 
     7. LinkedBlockingDeque：由链表结构组成的双向阻塞队列
 
-33. 什么是多线程中的上下文切换
+36. 什么是多线程中的上下文切换
 
     多线程会共同使用一组计算机上的 CPU，而线程数大于给程序分配的 CPU 数量时，为了让各个线程都有执行的机会，就需要轮转使用 CPU。不同的线程切换使用 CPU发生的切换数据等就是上下文切换
 
-34. 死锁与活锁的区别，死锁与饥饿的区别
+37. 死锁与活锁的区别，死锁与饥饿的区别
 
     
 
-35. 在 Java 中 CycliBarriar 和 CountdownLatch 有什么区别
+38. 在 Java 中 CycliBarriar 和 CountdownLatch 有什么区别
 
     CyclicBarrier 可以重复使用，而 CountdownLatch 不能重复使用。 Java 的 concurrent 包里面的 CountDownLatch 其实可以把它看作一个计数器，只不过这个计数器的操作是原子操作，同时只能有一个线程去操作这个计数器，也就是同时只能有一个线程去减这个计数器里面的值。你可以向 CountDownLatch 对象设置一个初始的数字作为计数值，任何调用这个对象上的 await()方法都会阻塞，直到这个计数器的计数值被其他的线程减为 0 为止。
 
@@ -1050,13 +1062,13 @@
 
     CyclicBarrier 一个同步辅助类，它允许一组线程互相等待，直到到达某个公共屏障点 (common barrier point)。在涉及一组固定大小的线程的程序中，这些线程必须不时地互相等待，此时 CyclicBarrier 很有用。因为该 barrie在释放等待线程后可以重用，所以称它为循环 的barrier。
 
-36. 为什么使用 Executor 框架比使用应用创建和管理线程好
+39. 为什么使用 Executor 框架比使用应用创建和管理线程好
 
     1. 每次执行任务创建线程 new Thread()比较消耗性能，创建一个线程是比较耗、耗资源的
     2. 调用 new Thread()创建的线程缺乏管理，被称为野线程，而且可以无限制的创建，线程之间的相互竞争会导致过多占用系统资源而导致系统瘫痪，还有线程之间的频繁交替也会消耗很多系统资源。
     3. 直接使用 new Thread() 启动的线程不利于扩展，比如定时执行、定期执行、定时定期执行、线程中断等都不便实现
 
-37. 使用 Executor 线程池框架的优点
+40. 使用 Executor 线程池框架的优点
 
     1. 能复用已存在并空闲的线程从而减少线程对象的创建从而减少了消亡线程的开
        销。
@@ -1067,7 +1079,7 @@
 
        综上所述使用线程池框架 Executor 能更好的管理线程、提供系统资源使用率
 
-38. Linux 上查找哪个线程使用的 CPU 时间最长
+41. Linux 上查找哪个线程使用的 CPU 时间最长
 
     1. 使用top 命令，然后使按下 shift + p 查找出cpu 使用率最高的 pid
     2. 根据第一步拿到的pid  使用命令 top -H -p pid  然后按下 shift +p 查找cpu 利用率最高的线程
@@ -1075,7 +1087,7 @@
     4. 使用 jstack pid > /tmp/d.dat 将进程信息打印输出
     5. 编辑 dat 文件，查找线程号对应的信息
 
-39. 为什么代码会重排序
+42. 为什么代码会重排序
 
     在执行程序时，为了提供性能，处理器和编译器常常会对指令进行重排序，但是不能随意重排序，不是你想怎么排序就怎么排序，它需要满足以下两个条件
 
@@ -1084,13 +1096,13 @@
 
     需要注意的是：重排序不会影响单线程环境的执行结果，但是会破坏多线程的执行语义
 
-40. volatile 变量和 atomic 变量有什么不同
+43. volatile 变量和 atomic 变量有什么不同
 
     Volatile 变量可以确保先行关系，即写操作会发生在后续的读操作之前, 但它并不能保证原子性。例如用 volatile 修饰 count 变量那么 count++ 操作就不是原子性的
 
      AtomicInteger 类提供的 atomic 方法可以让这种操作具有原子性如getAndIncrement()方法会原子性的进行增量操作把当前值加一，其它数据类型和引用变量也可以进行相似操作
 
-41. 什么是 CAS
+44. 什么是 CAS
 
     CAS 是 compare and swap 的缩写，即我们所说的比较交换 
 
@@ -1102,7 +1114,7 @@
 
     CAS  具 有 原 子 性 ， 它 的 原 子 性 由  CPU  硬 件 指 令 实 现 保 证 ， 即 使 用JNI 调 用 Native 方 法 调 用 由 C++ 编 写 的 硬 件 级 别 指 令 ， JDK 中 提供 了 Unsafe 类 执 行 这 些 操 作
 
-42. CAS 的问题
+45. CAS 的问题
 
     1. CAS 容易造成 ABA 问题
 
@@ -1110,20 +1122,21 @@
 
     2. 不能保证代码块的原子性
 
-       CAS 机制所保证的知识一个变量的原子性操作，而不能保证整个代码块的原子性。比如需要保证 3 个变量共同进行原子性的更新，就不得不使用 synchronized 了
+       CAS 机制所保证的知识一个变量的原子性操作，而不能保证整个代码块的原子性。比如需要保证 3 个变量共同进行原子性的更新，就不得不使用synchronized 了
 
     3. CAS 造成 CPU 利用率增加
 
-        CAS 里面是一个循环判断的过程，如果线程一直没有获取到状态，cpu
-       资源会一直被占用
+        CAS 里面是一个循环判断的过程，如果线程一直没有获取到状态，cpu资源会一直被占用 ，可以使用自旋次数的设置，来避免这个耗时问题
 
-43. 什么是AQS
+46. 什么是AQS
 
     AQS 是 AbstactQueuedSynchronizer 的简称，它是一个 Java 提高的底层同步工具类，用一个 int 类型的变量表示同步状态，并提供了一系列的 CAS 操作来管理这个同步状态 
 
     AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高效地构造出应用广泛的大量的同步器，比如我们提到的 ReentrantLock，Semaphore，其他的诸如ReentrantReadWriteLock，SynchronousQueue，FutureTask 等等皆是基于AQS 的
 
-44. AQS 框 架
+    AQS定义了对双向队列所有的操作，而只开放了tryLock和tryRelease方法给开发者使用，开发者可以根据自己的实现重写tryLock和tryRelease方法，以实现自己的并发功能
+
+47. AQS 框 架 
 
     1.  AQS 在 内 部 定 义 了 一 个 volatile int state 变 量 ， 表 示 同 步 状 态 ： 当 线程 调 用 lock 方 法 时 ， 如 果 state=0， 说 明 没 有 任 何 线 程 占 有 共 享 资 源的 锁 ， 可 以 获 得 锁 并 将 state=1； 如 果 state=1， 则 说 明 有 线 程 目 前 正 在使 用 共 享 变 量 ， 其 他 线 程 必 须 加 入 同 步 队 列 进 行 等 待
     2. AQS 通 过 Node 内 部 类 构 成 的 一 个 双 向 链 表 结 构 的 同 步 队 列 ， 来 完 成 线程 获 取 锁 的 排 队 工 作 ， 当 有 线 程 获 取 锁 失 败 后 ， 就 被 添 加 到 队 列 末 尾
@@ -1132,17 +1145,17 @@
     3. AQS  通 过 内 部 类  ConditionObject  构 建 等 待 队 列 （ 可 有 多 个 ） ， 当Condition  调 用  wait()  方 法 后 ， 线 程 将 会 加 入 等 待 队 列 中 ， 而 当Condition 调 用 signal() 方 法 后 ， 线 程 将 从 等 待 队 列 转 移 动 同 步 队 列 中进 行 锁 竞 争
     4.  AQS  和  Condition  各 自 维 护 了 不 同 的 队 列 ， 在 使 用  Lock  和 Condition 的 时 候 ， 其 实 就 是 两 个 队 列 的 互 相 移 动
 
-46. 线程类的构造方法、静态块是被哪个线程调用的
+48. 线程类的构造方法、静态块是被哪个线程调用的
 
     线程类的构造方法、静态块是被 new这个线程类所在的线程所调用的，而 run 方法里面的代码才是被线程自身所调用的
 
-46. 在多线程中，什么是上下文切换(context-switching)？
+49. 在多线程中，什么是上下文切换(context-switching)？
 
     单核CPU也支持多线程执行代码，CPU通过给每个线程分配CPU时间片来实现这个机制。时间片是CPU分配给各个线程的时间，因为时间片非常短，所以CPU通过不停地切换线程执行，让我们感觉多个线程时同时执行的，时间片一般是几十毫秒（ms）。
 
     操作系统中，CPU时间分片切换到另一个就绪的线程，则需要保存当前线程的运行的位置，同时需要加载需要恢复线程的环境信息
 
-47. 线程安全的级别
+50. 线程安全的级别
 
     ###### 不可变
 
@@ -1166,7 +1179,7 @@
 
     线程对立是那些不管是否采用了同步措施，都不能在多线程环境中并发使用的代码   如如System.setOut()、System.runFinalizersOnExit()
 
-48. 
+51. 
 
 ### JVM
 
