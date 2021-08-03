@@ -1728,7 +1728,17 @@ OOP 面向对象
 
     方法级别：映射 URL 以及 HTTP 请求方法
 
-11. 有哪些类型的AOP通知（Advice）
+11. Spring AOP里面的几个名词
+
+    1. 切面（Aspect）：被抽取的公共模块，可能会横切多个对象。 在Spring AOP中，切面可以使用通用类（基于模式的风格） 或者在普通类中以 @AspectJ 注解来实现
+    2. 连接点（Join point）：指方法，在Spring AOP中，一个连接点 总是 代表一个方法的执行。
+    3. 通知（Advice）：在切面的某个特定的连接点（Join point）上执行的动作。通知有各种类型，其中包括“around”、“before”和“after”等通知。许多AOP框架，包括Spring，都是以拦截器做通知模型， 并维护一个以连接点为中心的拦截器链
+    4. 切入点（Pointcut）：切入点是指 我们要对哪些Join point进行拦截的定义。通过切入点表达式，指定拦截的方法，比如指定拦截add、search
+    5. 引入（Introduction）：（也被称为内部类型声明（inter-type declaration））。声明额外的方法或者某个类型的字段。Spring允许引入新的接口（以及一个对应的实现）到任何被代理的对象。例如，你可以使用一个引入来使bean实现 IsModified 接口，以便简化缓存机制
+    6. 目标对象（Target Object）： 被一个或者多个切面（aspect）所通知（advise）的对象。也有人把它叫做 被通知（adviced） 对象。 既然Spring AOP是通过运行时代理实现的，这个对象永远是一个 被代理（proxied） 对象
+    7. 织入（Weaving）：指把增强应用到目标对象来创建新的代理对象的过程。Spring是在运行时完成织入
+
+12. 有哪些类型的AOP通知（Advice）
 
     1. Before - 这些类型的 Advice 在 joinpoint 方法之前执行，并使用@Before 注解标记进行配置。
     2.  After Returning - 这些类型的 Advice 在连接点方法正常执行后执行，并使用@AfterReturning 注解标记进行配置。
@@ -1736,14 +1746,14 @@ OOP 面向对象
     4.  After (finally) - 这些类型的 Advice 在连接点方法之后执行，无论方法退出是正常还是异常返回，并使用 @After 注解标记进行配置。
     5.  Around - 这些类型的 Advice 在连接点之前和之后执行，并使用@Around 注解标记进行配置
 
-12. Spring MVC 组件
+13. Spring MVC 组件
 
     1. DispatcherServlet：作为前端控制器，整个流程控制的中心，控制其它组件执行，统一调度，降低组件之间的耦合性，提高每个组件的扩展
     2. HandlerMapping：通过扩展处理器映射器实现不同的映射方式，例如：配置文件方式，实现接口方式，注解方式等。
     3. HandlAdapter：通过扩展处理器适配器，支持更多类型的处理器。
     4. ViewResolver：通过扩展视图解析器，支持更多类型的视图解析，例如：jsp、freemarker、pdf、excel等
 
-13. DispatcherServlet 的工作流程
+14. DispatcherServlet 的工作流程
 
     ![image-20210630153343101](C:\Users\Sean\AppData\Roaming\Typora\typora-user-images\image-20210630153343101.png)
 
@@ -1760,7 +1770,7 @@ OOP 面向对象
     7. ViewResolver 结合 Model 和 View，来渲染视图。
     8. 视图负责将渲染结果返回给客户端。
 
-14. Spring中Autowired和Resource关键字的区别
+15. Spring中Autowired和Resource关键字的区别
 
     @Resource和@Autowired都是做bean的注入时使用，其实@Resource并不是Spring的注解，它的包是javax.annotation.Resource，需要导入，但是Spring支持该注解的注入。
 
@@ -1781,7 +1791,7 @@ OOP 面向对象
        如果既没有指定name，又没有指定type，则自动按照byName方式进行装配；如果没有匹配，则回退为一个原始类型进行匹配，如果匹
        配则自动装配。@Resource的作用相当于@Autowired，只不过@Autowired按照byType自动注入
 
-15. Spring框架中都用到了哪些设计模式
+16. Spring框架中都用到了哪些设计模式
 
     （1）工厂模式：BeanFactory就是简单工厂模式的体现，用来创建对象的实例；
     （2）单例模式：Bean默认为单例模式。
@@ -1789,11 +1799,11 @@ OOP 面向对象
     （4）模板方法：用来解决代码重复的问题。比如. RestTemplate, JmsTemplate, JpaTemplate。
     （5）观察者模式：定义对象键一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都会得到通知被制动更新，如Spring中listener的实现--ApplicationListener
 
-16. 哪些是重要的 bean 生命周期方法？
+17. 哪些是重要的 bean 生命周期方法？
 
     有两个重要的 bean 生命周期方法，第一个是 setup ， 它是在容器加载 bean的时候被调用。第二个方法是 teardown 它是在容器卸载类的时候被调用。The bean 标签有两个重要的属性（init-method 和 destroy-method）。用它们你可以自己定制初始化和注销方法。它们也有相应的注解（@PostConstruct 和@PreDestroy）
 
-17. spring 中的事件
+18. spring 中的事件
 
     1. 上下文更新事件（ContextRefreshedEvent）：该事件会在 ApplicationContext 被初始化或者更新时发布。也可以在调用 ConfigurableApplicationContext 接口中的 refresh()方法时被触发
     2. 上下文开始事件（ContextStartedEvent）：当容器调用 ConfigurableApplicationContext 的Start()方法开始/重新开始容器时触发该事件
@@ -1801,7 +1811,79 @@ OOP 面向对象
     4. 上下文关闭事件（ContextClosedEvent）：当 ApplicationContext 被关闭时触发该事件。容器被关闭时，其管理的所有单例 Bean 都被销毁
     5. 请求处理事件（RequestHandledEvent）：在 Web 应用中，当一个 http 请求（request）结束触发该事件。
 
-18. 
+19. Springmvc controller方法中为什么不能定义局部变量
+
+    因为controller是默认单例模式，高并发下全局变量会出现线程安全问题
+    现这种问题如何解决呢
+
+    1. 既然是全局变量惹的祸，那就将全局变量都编程局部变量，通过方法参数来传递
+    2. jdk提供了java.lang.ThreadLocal,它为多线程并发提供了新思路。
+    3. 使用@Scope("session")，会话级别
+    4. 将控制器的作用域从单例改为原型，即在spring配置文件Controller中声明 scope="prototype"，每次都创建新的controller
+
+20. SpringMVC中的拦截器和Servlet中的filter有什么区别
+
+    首先最核心的一点他们的拦截侧重点是不同的，SpringMVC中的拦截器是依赖JDK的反射实现的，SpringMVC的拦截器主要是进行拦截请求，通过对Handler进行处理的时候进行拦截，先声明的拦截器中的preHandle方法会先执行，然而它的postHandle方法（他是介于处理完业务之后和返回结果之前）和afterCompletion方法却会后执行。并且Spring的拦截器是按照配置的先后顺序进行拦截的
+
+    而Servlet的filter是基于函数回调实现的过滤器，Filter主要是针对URL地址做一个编码的事情、过滤掉没用的参数、安全校验（比较泛的，比如登录不登录之类）
+
+21. 列举 IoC 的一些好处
+
+    1. 它将最小化应用程序中的代码量
+    2. 它将使您的应用程序易于测试，因为它不需要单元测试用例中的任何单例或 JNDI 查找机制。
+    3. 它以最小的影响和最少的侵入机制促进松耦合。
+    4. 它支持即时的实例化和延迟加载服务
+
+22. spring的事务传播行为
+
+    spring事务的传播行为说的是，当多个事务同时存在的时候，spring如何处理这些事务的行为
+
+    1. PROPAGATION_REQUIRED：如果当前没有事务，就创建一个新事务，如果当前存在事务，就加入该事务，该设置是最常用的设置
+    2. PROPAGATION_SUPPORTS：支持当前事务，如果当前存在事务，就加入该事务，如果当前不存在事务，就以非事务执行
+    3. PROPAGATION_MANDATORY：支持当前事务，如果当前存在事务，就加入该事务，如果当前不存在事务，就抛出异常
+    4. PROPAGATION_REQUIRES_NEW：创建新事务，无论当前存不存在事务，都创建新事务
+    5. PROPAGATION_NOT_SUPPORTED：以非事务方式执行操作，如果当前存在事务，就把当前事务挂起
+    6. PROPAGATION_NEVER：以非事务方式执行，如果当前存在事务，则抛出异常
+    7. PROPAGATION_NESTED：如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则按REQUIRED属性执行
+
+23. Spring中的隔离级别
+
+    1.  ISOLATION_DEFAULT：这是个 PlatfromTransactionManager 默认的隔离级别，使用数据库默认的事务隔离级别
+    2. ISOLATION_READ_UNCOMMITTED：读未提交，允许另外一个事务可以看到这个事务未提交的数据
+    3. ISOLATION_READ_COMMITTED：读已提交，保证一个事务修改的数据提交后才能被另一事务读取，而且能看到该事务对已有记录的更新
+    4. ISOLATION_REPEATABLE_READ：可重复读，保证一个事务修改的数据提交后才能被另一事务读取，但是不能看到该事务对已有记录的更新
+    5.  ISOLATION_SERIALIZABLE：一个事务在执行的过程中完全看不到其他事务对数据库所做的更新。
+
+24. Spring如何管理事务的
+
+    Spring事务管理主要包括3个接口，Spring事务主要由以下三个共同完成的
+
+    1. PlatformTransactionManager：事务管理器，主要用于平台相关事务的管理。主要包括三个方法：①、commit：事务提交。②、rollback：事务回滚。③、getTransaction：获取事务状态
+    2. TransacitonDefinition：事务定义信息，用来定义事务相关属性，给事务管理器PlatformTransactionManager使用这个接口有下面四个主要方法：①、getIsolationLevel：获取隔离级别。②、getPropagationBehavior：获取传播行为。③、getTimeout获取超时时间。④、isReadOnly：是否只读（保存、更新、删除时属性变为false--可读写，查询时为true--只读）事务管理器能够根据这个返回值进行优化，这些事务的配置信息，都可以通过配置文件进行配置
+    3. TransationStatus：事务具体运行状态，事务管理过程中，每个时间点事务的状态信息。例如：①、hasSavepoint()：返回这个事务内部是否包含一个保存点。②、isCompleted()：返回该事务是否已完成，也就是说，是否已经提交或回滚。③、isNewTransaction()：判断当前事务是否是一个新事务
+
+25. 说说 BeanFactory 和 ApplicationContext 的区别？ 什么是延迟实例化，它的优缺点是什么
+
+    BeanFactory和ApplicationContext是Spring的两大核心接口，都可以当做Spring的容器。其中ApplicationContext是BeanFactory的子接口
+
+    
+
+    BeanFactory：是Spring里面最底层的接口，包含了各种Bean的定义，读取bean配置文档，管理bean的加载、实例化，控制bean的生命周期，维护bean之间的依赖关系。
+
+    ApplicationContext接口作为BeanFactory的派生，除了提供BeanFactory所具有的功能外，还提供了更完整的框架功能
+
+    - 继承MessageSource，因此支持国际化。
+    - 统一的资源文件访问方式。
+    - 提供在监听器中注册bean的事件。
+    - 同时加载多个配置文件。
+    - 载入多个（有继承关系）上下文 ，使得每一个上下文都专注于一个特定的层次，比如应用的web层
+    - BeanFactroy采用的是延迟加载形式来注入Bean的，即只有在使用到某个Bean时(调用getBean())，才对该Bean进行加载实例化。这样，我们就不能发现一些存在的Spring的配置问题。如果Bean的某一个属性没有注入，BeanFacotry加载后，直至第一次使用调用getBean方法才会抛出异常。
+    - ApplicationContext，它是在容器启动时，一次性创建了所有的Bean。这样，在容器启动时，我们就可以发现Spring中存在的配置错误，这样有利于检查所依赖属性是否注入。 ApplicationContext启动后预载入所有的单实例Bean，通过预载入单实例bean ,确保当你需要的时候，你就不用等待，因为它们已经创建好了。
+    - 相对于基本的BeanFactory，ApplicationContext 唯一的不足是占用内存空间。当应用程序配置Bean较多时，程序启动较慢。
+    - BeanFactory通常以编程的方式被创建，ApplicationContext还能以声明的方式创建，如使用ContextLoader。
+    - BeanFactory和ApplicationContext都支持BeanPostProcessor、BeanFactoryPostProcessor的使用，但两者之间的区别是：BeanFactory需要手动注册，而ApplicationContext则是自动注册
+
+26. 
 
 ### Spring Boot
 
@@ -1840,6 +1922,18 @@ OOP 面向对象
 4. Spring Boot 中静态资源直接映射的优先级是怎样的
 
    优先级顺序为：META-INF/resources > resources > static > public
+   
+5. Spring Boot扫描流程
+
+   1. 调用run方法中的 refreshContext 方法
+   2. 用AbstractApplicationContext中的 refresh 方法
+   3. 委托给 invokeBeanFactoryPostProcessors 去处理调用链
+   4. 其中一个方法 postProcessBeanDefinitionRegistry会 去调用 processConfigBeanDefinitions解析 beandefinitions
+   5. 在 processConfigBeanDefinitions 中有一个 parse 方法，其中有 componentScanParser.parse的方法，这个方法会扫描当前路径下所有 Component 组件
+
+   
+
+6. 
 
 ### Spring Cloud 
 
@@ -1865,7 +1959,31 @@ OOP 面向对象
 
    Spring Cloud Gateway是Spring Cloud官方推出的第二代网关框架，取代Zuul网关。网关作为流量的，在微服务系统中有着非常作用，网关常见的功能有路由转发、权限校验、限流控制等作用
 
-6. 
+6.  spring cloud 的核心组件有哪些
+
+   - Eureka：服务注册于发现
+   - Feign：基于动态代理机制，根据注解和选择的机器，拼接请求 url 地址，发起请求
+   - Ribbon：实现负载均衡，从一个服务的多台机器中选择一台。
+   - Hystrix：提供线程池，不同的服务走不同的线程池，实现了不同服务调用的隔离，避免了服务雪崩的问题
+   - Zuul：网关管理，由 Zuul 网关转发请求给对应的服务
+
+7. SpringCloud 和 Dubbo 有哪些区别
+
+   首先，他们都是分布式管理框架。
+
+   1. dubbo 是二进制传输，占用带宽会少一点。SpringCloud是http 传输，带宽会多一点，同时使用http协议一般会使用JSON报文，消耗会更大
+   2. dubbo 开发难度较大，所依赖的 jar 包有很多问题大型工程无法解决。SpringCloud 对第三方的继承可以一键式生成，天然集成
+   3. SpringCloud 接口协议约定比较松散，需要强有力的行政措施来限制接口无序升级
+   4. 最大的区别: Spring Cloud抛弃了Dubbo 的RPC通信，采用的是基于HTTP的REST方式
+
+8. Ribbon和Feign的区别
+
+   1. Ribbon都是调用其他服务的，但方式不同
+   2. 启动类注解不同，Ribbon是@RibbonClient feign的是@EnableFeignClients
+   3. 服务指定的位置不同，Ribbon是在@RibbonClient注解上声明，Feign则是在定义抽象方法的接口中使用@FeignClient声明
+   4. 调用方式不同，Ribbon需要自己构建http请求，模拟http请求然后使用RestTemplate发送给其他服务，步骤相当繁琐。Feign需要将调用的方法定义成抽象方法即可
+
+9. 
 
 ### Spring Cloud Alibaba
 
@@ -1908,11 +2026,75 @@ OOP 面向对象
 
    另外一种就是通过 xml里面写 SQL 来绑定,在这种情况下,要指定 xml 映射文件里面的 namespace 必须为接口的全路径名。当 Sql 语句比较简单时候,用注解绑定, 当 SQL 语句比较复杂时候,用 xml 绑定,一般用 xml 绑定的比较多
 
-   
+8. mybatis  的优缺点
 
-   
+   ###### 优点
 
-   
+   1. 基于SQL语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成任何影响，SQL写在XML里，解除sql与程序代码的耦合，便于统一管理；提供XML标签，支持编写动态SQL语句，并可重用
+   2. 与JDBC相比，减少了50%以上的代码量，消除了JDBC大量冗余的代码，不需要手动开关连接
+   3. 很好的与各种数据库兼容（因为MyBatis使用JDBC来连接数据库，所以只要JDBC支持的数据库MyBatis都支持
+   4. 能够与Spring很好的集成
+   5. 提供映射标签，支持对象与数据库的ORM字段关系映射；提供对象关系映射标签，支持对象关系组件维护
+
+   ###### 缺点
+
+   1. SQL语句的编写工作量较大，尤其当字段多、关联表多时，对开发人员编写SQL语句的功底有一定要求
+   2. SQL语句依赖于数据库，导致数据库移植性差，不能随意更换数据库
+
+9. MyBatis编程步骤是什么样的
+
+   1. 创建SqlSessionFactory
+   2. 通过SqlSessionFactory创建SqlSession
+   3. 通过sqlsession执行数据库操作
+   4. 调用session.commit()提交事务
+   5. 调用session.close()关闭会话
+
+10. MyBatis的工作原理
+
+   1. 读取 MyBatis 配置文件：mybatis-config.xml 为 MyBatis 的全局配置文件，配置了 MyBatis 的运行环境等信息，例如数据库连接信息
+   2. 加载映射文件。映射文件即 SQL 映射文件，该文件中配置了操作数据库的 SQL 语句，需要在MyBatis 配置文件 mybatis-config.xml 中加载。mybatis-config.xml 文件可以加载多个映射文件，每个文件对应数据库中的一张表
+   3. 构造会话工厂：通过 MyBatis 的环境等配置信息构建会话工厂 SqlSessionFactory
+   4. 创建会话对象：由会话工厂创建 SqlSession 对象，该对象中包含了执行 SQL 语句的所有方法
+   5. Executor 执行器：MyBatis 底层定义了一个 Executor 接口来操作数据库，它将根据 SqlSession 传递的参数动态地生成需要执行的 SQL 语句，同时负责查询缓存的维护
+   6. MappedStatement 对象：在 Executor 接口的执行方法中有一个 MappedStatement 类型的参数，该参数是对映射信息的封装，用于存储要映射的 SQL 语句的 id、参数等信息
+   7. 输入参数映射：输入参数类型可以是 Map、List 等集合类型，也可以是基本数据类型和 POJO 类型。输入参数映射过程类似于 JDBC 对 preparedStatement 对象设置参数的过程
+   8. 输出结果映射：输出结果类型可以是 Map、 List 等集合类型，也可以是基本数据类型和 POJO 类型。输出结果映射过程类似于 JDBC 对结果集的解析过程
+
+11. Mybatis都有哪些Executor执行器？它们之间的区别是什么
+
+    Mybatis有三种基本的Executor执行器，SimpleExecutor、ReuseExecutor、BatchExecutor、
+
+    - SimpleExecutor：每执行一次update或select，就开启一个Statement对象，用完立刻关闭Statement对象
+    - ReuseExecutor：执行update或select，以sql作为key查找Statement对象，存在就使用，不存在就创建，用完后，不关闭Statement对象，而是放置于Map<String, Statement>内，供下一次使用。简言之，就是重复使用Statement对象
+    - BatchExecutor：执行update（没有select，JDBC批处理不支持select），将所有sql都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个Statement对象，每个Statement对象都是addBatch()完毕后，等待逐一执行executeBatch()批处理。与JDBC批处理相同
+
+12.  Mybatis是如何进行分页的？分页插件的原理是什么？
+
+    1. Mybatis 使用 RowBounds 对象进行分页，也可以直接编写 sql 实现分页，也可以使用Mybatis 的分页插件
+    2. 分页插件的原理：实现 Mybatis 提供的接口，实现自定义插件，在插件的拦截方法内拦截待执行的 sql，然后重写 sql
+
+13. 在mapper中如何传递多个参数
+
+    1. 顺序传参法  where user_name = #{0} and dept_id = #{1}     #{}里面的数字代表传入参数的顺序  这种方法不建议使用，sql层表达不直观，且一旦顺序调整容易出错。
+    2. @Param注解传参法  @Param("userName") String name   where user_name = #{userName}  #{}里面的名称对应的是注解@Param括号里面修饰的名称  这种方法在参数不多的情况还是比较直观的，（推荐使用）
+    3. Map传参法  
+    4. Java Bean传参法  #{}里面的名称对应的是User类里面的成员属性
+
+14. Mybatis的Xml映射文件中，不同的Xml映射文件，id是否可以重复
+
+    不同的Xml映射文件，如果配置了namespace，那么id可以重复；如果没有配置namespace，那么id不能重复
+
+15. 
+
+16. 
+
+    
+
+    
+
+    
+
+    
 
 ### Zookeeper 
 
@@ -2291,8 +2473,10 @@ OOP 面向对象
     简单理解为：由于原有缓存失效，新缓存未到期间(例如：我们设置缓存时采用了相同的过期时间，在同一时刻出现大面积的缓存过期)，所有原本应该访问缓存的请求都去查询数据库了，而对数据库CPU和内存造成巨大压力，严重的会造成数据库宕机。从而形成一系列连锁反应，造成整个系统崩溃、
 
     解决办法：
-    大多数系统设计者考虑用加锁（ 最多的解决方案）或者队列的方式保证来保证不会有大量的线程对数据库一次性进行读写，从而避免失效
-    时大量的并发请求落到底层存储系统上。还有一个简单方案就时将缓存失效时间分散开
+
+    1. 大多数系统设计者考虑用加锁（ 最多的解决方案）或者队列的方式保证来保证不会有大量的线程对数据库一次性进行读写，从而避免失效
+       时大量的并发请求落到底层存储系统上。还有一个简单方案就时将缓存失效时间分散开
+    2. 永远不过期：物理不过期，但逻辑过期（后台异步线程去刷新）
 
 11. 缓存穿透
 
@@ -2300,6 +2484,8 @@ OOP 面向对象
 
     解决办法;
     最常见的则是采用布隆过滤器，将所有可能存在的数据哈希到一个足够大的bitmap中，一个一定不存在的数据会被这个bitmap拦截掉，从而避免了对底层存储系统的查询压力。另外也有一个更为简单粗暴的方法，如果一个查询返回的数据为空（不管是数据不存在，还是系统故障），我们仍然把这个空结果进行缓存，但它的过期时间会很短，最长不超过五分钟。通过这个直接设置的默认值存放到缓存，这样第二次到缓冲中获取就有值了，而不会继续访问数据库，这种办法最简单粗暴
+
+    
 
 12. 布隆过滤器
 
@@ -2335,16 +2521,21 @@ OOP 面向对象
 
     - String
       这个其实没啥好说的，最常规的set/get操作，value可以是String也可以是数字。一般做一些复杂的计数功能的缓存。
-    - hash
-      这里value存放的是结构化的对象，比较方便的就是操作其中的某个字段。博主在做单点登录的时候，就是用这种数据结构存储用户信息，
-      以cookieId作为key，设置30分钟为缓存过期时间，能很好的模拟出类似session的效果。
+      
+    - hashhash 
+
+      是一个 string 类型的 field 和 value 的映射表，hash 特别适合用于存储对象，后续操作的时候，你可以直接仅仅修改这个对象中的某个字段的值。 比如我们可以 hash 数据结构来存储用户信息，商品信息等等
+
     - list
-      使用List的数据结构，可以做简单的消息队列的功能。另外还有一个就是，可以利用lrange命令，做基于redis的分页功能，性能极佳，用户
+      list 的实现为一个双向链表，即可以支持反向查找和遍历，更方便操作，不过带来了部分额外的内
+      存开销 ， 可以做简单的消息队列的功能。 另外还有一个就是，可以利用lrange命令，做基于redis的分页功能，性能极佳，用户
       体验好。本人还用一个场景，很合适—取行情信息。就也是个生产者和消费者的场景。LIST可以很好的完成排队，先进先出的原则。
+      
     - set
       因为set堆放的是一堆不重复值的集合。所以可以做全局去重的功能。为什么不用JVM自带的Set进行去重？因为我们的系统一般都是集群部
       署，使用JVM自带的Set，比较麻烦，难道为了一个做一个全局去重，再起一个公共服务，太麻烦了。
       另外，就是利用交集、并集、差集等操作，可以计算共同喜好，全部的喜好，自己独有的喜好等功能。
+      
     - sorted set
       sorted set多了一个权重参数score,集合中的元素能够按score进行排列。可以做排行榜应用，取TOP N操作
 
@@ -2422,14 +2613,71 @@ OOP 面向对象
     sortedset，拿时间戳作为score，消息内容作为 key 调用 zadd 来生产消息，消费者用 zrangebyscore 指令获取 N 秒之前的数据轮询进行
     处理。到这里，面试官暗地里已经对你竖起了大拇指。但是他不知道的是此刻你却竖起了中指，在椅子背后
 
+    
+
 27. redis 分布式锁
+
+    1. 线程 A setnx(上锁的对象,超时时的时间戳 t1)，如果返回 true，获得锁
+    2. 线程 B 用 get 获取 t1,与当前时间戳比较,判断是是否超时,没超时 false,若超时执行第 3 步;
+    3. 计算新的超时时间 t2,使用 getset 命令返回 t3(该值可能其他线程已经修改过),如果 t1==t3，获得锁，如果 t1!=t3 说明锁被其他线程获取了
+    4. 获取锁后，处理完业务逻辑，再去判断锁是否超时，如果没超时删除锁，如果已超时，不用处理（防止删除其他线程的锁）
 
 28. Redis中数据库默认是多少个db即作用
 
     Redis默认支持16个数据库，可以通过配置databases来修改这一数字。客户端与Redis建立连接后会自动选择0号数据库，不过可以随时使用select命令更换数据库。
     Redis支持多个数据库，并且每个数据库是隔离的不能共享，并且基于单机才有，如果是集群就没有数据库的概念
 
-29. 
+29. Redis 集群的主从复制模型是怎样的
+
+    为了使在部分节点失败或者大部分节点无法通信的情况下集群仍然可用，所以集群使用了主从复制模型,每个节点都会有 N-1 个复制品
+
+30.  Redis 集群如何选择数据库
+
+    Redis 集群目前无法做数据库选择，默认在 0 数据库。
+
+31. Redis 中的管道有什么用
+
+    一次请求/响应服务器能实现处理新的请求即使旧的请求还未被响应，这样就可以将多个命令发送到服务器，而不用等待回复，最后在一个步骤中读取该答复
+
+32. 怎么理解 Redis 事务
+
+    事务是一个单独的隔离操作：事务中的所有命令都会序列化、按顺序地执行，事务在执行的过程中，不会被其他客户端发送来的命令请求所打断
+
+    事务是一个原子操作：事务中的命令要么全部被执行，要么全部都不执行
+
+33. Redis 事务相关的命令有哪几个
+
+    1. DISCARD用来取消一个事务
+    2. EXEC用来执行一个事务
+    3. MULTI用来组装一个事务
+    4. WATCH用来监视一些key，一旦这些key在事务执行之前被改变，则取消事务的执行
+    5. WATCH取消 WATCH 命令对所有 key 的监视。
+
+34. Redis key 的过期时间和永久有效分别怎么设置
+
+    EXPIRE 和 PERSIST 命令
+
+    expire 指令可以设置 key 的超时时间，单 位秒。即在多少秒后过期。 返回1代表设置成功；返回 0 代表设置不成功，此时是因为key不存在导致的
+
+    使用 persist 清除过期时间   persist "key"   persist 返回值   1：成功清理过期时间    0：key 不存在，或者没有设置过期时间
+
+35. watch dog 自动延期机制
+
+    客户端 1 加锁的锁 key 默认生存时间才 30 秒，如果超过了 30 秒，客户端 1 还想一直持有这把锁，怎么办呢
+
+    简单！只要客户端 1 一旦加锁成功，就会启动一个 watch dog 看门狗，他是一个后台线程，会每隔 10秒检查一下，如果客户端 1 还持有锁 key，那么就会不断的延长锁 key 的生存时间 
+
+36. LRU 算法实现
+
+    1. 通过双向链表来实现，新数据插入到链表头部
+
+    2. 每当缓存命中（即缓存数据被访问），则将数据移到链表头部
+
+    3. 当链表满的时候，将链表尾部的数据丢弃
+
+       LinkedHashMap 通过维护一个额外的双向链表保证了迭代顺序。该迭代顺序可以是插入顺序（默认），也可以是访问顺序
+
+37. 
 
 ### Mysql
 
@@ -3358,20 +3606,25 @@ OOP 面向对象
 
    Nginx 使用反应器模式，主事件循环等待操作系统发出准备事件的信号，这样数据就可以从套接字读取。 在该实例中读取到缓冲区并进行处理，单个线程可以提供数万个并发连接
 
-4. 使用反向代理服务器的优点是什么
+4. 什么是正向代理和反向代理
+
+   - 正向代理就是一个人发送一个请求直接就到达了目标的服务器
+   - 反方代理就是请求统一被Nginx接收，nginx反向代理服务器接收到之后，按照一定的规则分发给了后端的业务处理服务器进行处理了
+
+5. 使用反向代理服务器的优点是什么
 
    反向代理服务器可以隐藏资源服务器的存在和特征，它充当互联网云和web 服务器之间的中间层。 这对安全方面来说是很好的。特别是使用web 托管服务时
 
-5. nginx 服务器的用途
+6. nginx 服务器的用途
 
    nginx 服务器的最佳用法是在网络商部署动态HTTP 内容， 使用SCGI WSGI 应用程序服务器，用于脚本的FastCGI 处理程序。 还可以作为负载均衡器
 
-6. nginx  服务器上的master 和worker 进程分别是什么
+7. nginx  服务器上的master 和worker 进程分别是什么
 
    - master 进程  ：  读取及评估配置和维持
    - worker进程：  处理请求
 
-7. 是否可能讲nginx 的错误替换为502 503 错误
+8. 是否可能讲nginx 的错误替换为502 503 错误
 
    502 === 错误网关 
 
@@ -3381,19 +3634,186 @@ OOP 面向对象
 
    Location / {fastcgi_pass 127.0.01:9001;fastcgi_intercept_errorson;error_page 502 =503/error_page.html;#…}
 
-8. 请解释  ngx_http_upstream_module  的作用是什么
+9. 请解释  ngx_http_upstream_module  的作用是什么
 
    ngx_http_upstream_module 用于定义可通过 fastcgi 传递、proxy 传递、uwsgi传递、memcached 传递和 scgi 传递指令来引用的服务器组
 
-9. 请解释什么是 C10K  问题
+10. 请解释什么是 C10K  问题
 
    C10K 问题是指无法同时处理大量客户端(10,000)的网络套接字
 
-10. 解释 x Nginx  是否支持将请求压缩到上游
+11. 解释 x Nginx  是否支持将请求压缩到上游
 
     您可以使用 Nginx 模块 gunzip 将请求压缩到上游。gunzip 模块是一个过滤器，它可以对不支持“gzip”编码方法的客户机或服务器使用“内容编码:gzip”来解压缩响应
 
-11. 
+12. 为什么Nginx性能这么高
+
+    因为他的事件处理机制：异步非阻塞事件处理机制：运用了epoll模型，提供了一个队列，排队解决
+
+13. Nginx负载均衡的算法怎么实现的?策略有哪些
+
+    为了避免服务器崩溃，大家会通过负载均衡的方式来分担服务器压力。将对台服务器组成一个集群，当用户访问时，先访问到一个转发服务器，再由转发服务器将访问分发到压力更小的服务器
+
+    1.  轮询(默认)  每个请求按时间顺序逐一分配到不同的后端服务器，如果后端某个服务器宕机，能自动剔除故障系统
+
+       ```shell
+       upstream backserver {
+       server 192.168.0.12;
+       server 192.168.0.13;
+       }
+       ```
+
+    2. 权重 weight 
+
+       weight的值越大分配  到的访问概率越高，主要用于后端每台服务器性能不均衡的情况下。其次是为在主从的情况下设置不同的权值，达到合理有效的地利用主机资源 .权重越高，在被访问的概率越大
+
+       ```shell
+       upstream backserver {
+       server 192.168.0.12 weight=2;
+       server 192.168.0.13 weight=8;
+       }	
+       ```
+
+       
+
+    3. ip_hash( IP绑定)   每个请求按访问IP的哈希结果分配，使来自同一个IP的访客固定访问一台后端服务器，并且可以有效解决动态网页存在的session共享问题
+
+       ```shell
+       upstream backserver {
+       ip_hash;
+       server 192.168.0.12:88;
+       server 192.168.0.13:80;
+       }
+       ```
+
+    4.  fair(第三方插件)
+
+       必须安装upstream_fair模块。对比 weight、ip_hash更加智能的负载均衡算法，fair算法可以根据页面大小和加载时间长短智能地进行负载均衡，响应时间短的优先分配
+
+       ```shell
+       upstream backserver {
+       server server1;
+       server server2;
+       fair;
+       }
+       ```
+
+    5. url_hash(第三方插件)
+
+       必须安装Nginx的hash软件包按访问url的hash结果来分配请求，使每个url定向到同一个后端服务器，可以进一步提高后端缓存服务器的效率
+
+       ```shell
+       upstream backserver {
+       server squid1:3128;
+       server squid2:3128;
+       hash $request_uri;
+       hash_method crc32;
+       }
+       ```
+
+14. Nginx配置文件nginx.conf有哪些属性模块
+
+    ```shell
+    worker_processes 1；              # worker进程的数量
+    events {                     # 事件区块开始
+     worker_connections 1024；         # 每个worker进程支持的最大连接数
+    }                      # 事件区块结束
+    http {                    # HTTP区块开始
+     include    mime.types；           # Nginx支持的媒体类型库文件
+     default_type application/octet-stream；      # 默认的媒体类型
+     sendfile    on；            # 开启高效传输模式
+     keepalive_timeout 65；          # 连接超时
+     server {                  # 第一个Server区块开始，表示一个独立的
+    虚拟主机站点
+       listen    80；             # 提供服务的端口，默认80
+       server_name localhost；        # 提供服务的域名主机名
+       location / {              # 第一个location区块开始
+         root  html；          # 站点的根目录，相当于Nginx的安装目录
+         index index.html index.htm；      # 默认的首页文件，多个用空格分开
+       }                 # 第一个location区块结果
+       error_page  500502503504 /50x.html；     # 出现对应的http状态码时，使
+    用50x.html回应客户
+       location = /50x.html {           # location区块开始，访问
+    50x.html
+         root  html；               # 指定对应的站点目录为html
+       }
+     }
+    ```
+
+15. Nginx怎么处理请求的
+
+    ```shell
+    server {              # 第一个Server区块开始，表示一个独立的虚拟主机
+    站点
+       listen    80；           # 提供服务的端口，默认80
+       server_name localhost；      # 提供服务的域名主机名
+       location / {            # 第一个location区块开始
+         root  html；        # 站点的根目录，相当于Nginx的安装目录
+         index index.html index.htm；    # 默认的首页文件，多个用空格分开
+       }             # 第一个location区块结果
+     } 
+    ```
+
+16. Nginx虚拟主机怎么配置
+
+    1. 基于域名的虚拟主机，通过域名来区分虚拟主机——应用：外部网站
+
+       需要建立/data/www /data/bbs目录，windows本地hosts添加虚拟机ip地址对应的域名解析；对应域名
+       网站目录下新增index.html文件
+
+       ```shell
+       #当客户端访问www.lijie.com,监听端口号为80,直接跳转到data/www目录下文件
+        server {
+          listen    80;
+          server_name www.lijie.com;
+          location / {
+            root  data/www;
+            index index.html index.htm;
+          }
+        }
+        #当客户端访问www.lijie.com,监听端口号为80,直接跳转到data/bbs目录下文件
+        server {
+          listen    80;
+          server_name bbs.lijie.com;
+          location / {
+            root  data/bbs;
+            index index.html index.htm;
+          }
+        }
+       ```
+
+       
+
+    2. 基于端口的虚拟主机，通过端口来区分虚拟主机——应用：公司内部网站，外部网站的管理后台
+
+       ```shell
+       #当客户端访问www.lijie.com,监听端口号为8080,直接跳转到data/www目录下文件
+        server {
+          listen    8080;
+          server_name 8080.lijie.com;
+          location / {
+            root  data/www;
+            index index.html index.htm;
+          }
+        }
+        #当客户端访问www.lijie.com,监听端口号为80直接跳转到真实ip服务器地址 127.0.0.1:8080
+        server {
+          listen    80;
+          server_name www.lijie.com;
+          location / {
+          proxy_pass http://127.0.0.1:8080;
+              index index.html index.htm;
+          }
+        }
+       ```
+
+       
+
+    3. 基于ip的虚拟主机
+
+    
+
+17. 
 
 ### Tomcat
 
