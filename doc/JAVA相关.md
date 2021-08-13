@@ -3273,16 +3273,7 @@ OOP 面向对象
    5. 应尽量避免在 where 子句中使用!=或<>操作符，否则将引擎放弃使用索引而进行全表扫描。
    6. 应尽量避免在 where 子句中对字段进行 null 值判断，否则将导致引擎放弃使用索引而进行全表扫描，如： select id from t where num is null 可以在num上设置默认值0，确保表中num列没有null值，然后这样查询： select id from t where num=0
 
-8. 简单说一说drop、delete与truncate的区别
-
-   SQL中的drop、delete、truncate都表示删除，但是三者有一些差别
-   delete和truncate只删除表的数据不删除表的结构
-   速度,一般来说: drop> truncate >delete
-
-   delete语句是dml,这个操作会放到rollback segement中,事务提交之后才生效;
-
-   如果有相应的trigger,执行的时候将被触发. truncate,drop是ddl, 操作立即生效,原数据不放到rollbacksegment中,不能回滚. 操作不触发
-   trigger
+   
 
 9. 什么是视图
 
@@ -4563,9 +4554,7 @@ OOP 面向对象
 
      部署调优，业务调优等
 
-2. elasticsearch 的倒排索引是什么
-
-   传统的我们的检索是通过文章，逐个遍历找到对应关键词的位置。而倒排索引，是通过分词策略，形成了词和文章的映射关系表，这种词典+映射表即为倒排索引。有了倒排索引，就能实现 o（1）时间复杂度的效率检索文章了，极大的提高了检索效率
+   
 
 3. elasticsearch 索引数据多了怎么办，如何调优，部署
 
@@ -4594,19 +4583,13 @@ OOP 面向对象
    3. 如果对某个节点的投票数达到一定的值（可以成为 master 节点数 n/2+1）并且该节点自己也选举自己，那这个节点就是 master。否则重新选举一直到满足上述条件。
    4. 补充：master 节点的职责主要包括集群、节点和索引的管理，不负责文档级别的管理；data 节点可以关闭 http 功能
 
-5. Master 节点和 候选 Master节点有什么区别
+4. Master 节点和 候选 Master节点有什么区别
 
    主节点负责集群相关的操作，例如创建或删除索引，跟踪哪些节点是集群的一部分，以及决定将哪些分片分配给哪些节点
 
    拥有稳定的主节点是衡量集群健康的重要标志
 
    而候选主节点是被选具备候选资格，可以被选为主节点的那些节点
-
-6. 详细描述一下 Elasticsearch 索引文档的过程
-
-   第一步：客户写集群某节点写入数据，发送请求。（如果没有指定路由/协调节点，请求的节点扮演路由节点的角色。）
-   第二步：节点 1 接受到请求后，使用文档_id 来确定文档属于分片 0。请求会被转到另外的节点，假定节点 3。因此分片 0 的主分片分配到节点 3 上。（文档获取分片的过程：借助路由算法获取，路由算法就是根据路由和文档 id 计算目标的分片 id 的过程）
-   第三步：节点 3 在主分片上执行写操作，如果成功，则将请求并行转发到节点 1和节点 2 的副本分片上，等待结果返回。所有的副本分片都报告成功，节点 3 将向协调节点（节点 1）报告成功，节点 1 向请求客户端报告写入成功
 
 7. 详细描述一下 Elasticsearch 搜索的过程
 
@@ -4634,13 +4617,13 @@ OOP 面向对象
    1. 当集群 master 候选数量不小于 3 个时，可以通过设置最少投票通过数量（discovery.zen.minimum_master_nodes）超过所有候选节点一半以上来解决脑裂问题；
    2. 当候选数量为两个时，只能修改为唯一的一个 master 候选，其他作为 data节点，避免脑裂问题
 
-10. 详细描述一下 Elasticsearch 索引文档的过程
+8. 详细描述一下 Elasticsearch 索引文档的过程
 
-   1. 当分片所在的节点接收到来自协调节点的请求后，会将请求写入到 Memory Buffer，然后定时（默认是每隔 1 秒）写入到 Filesystem Cache，这个从 MomeryBuffer 到Filesystem Cache 的过程就叫做 refresh；
-   2. 当然在某些情况下，存在 Momery Buffer 和 Filesystem Cache 的数据可能会丢失，ES 是通过 translog 的机制来保证数据的可靠性的。其实现机制是接收到请求后，同时也
-      会写入到 translog 中，当 Filesystem cache 中的数据写入到磁盘中时，才会清除掉，这个过程叫做 flush；
-   3. 在 flush 过程中，内存中的缓冲将被清除，内容被写入一个新段，段的 fsync将创建一个新的提交点，并将内容刷新到磁盘，旧的 translog 将被删除并开始一个新的translog。
-   4. 、flush 触发的时机是定时触发（默认 30 分钟）或者 translog 变得太大（默认为 512M）时
+      1. 当分片所在的节点接收到来自协调节点的请求后，会将请求写入到 Memory Buffer，然后定时（默认是每隔 1 秒）写入到 Filesystem Cache，这个从 MomeryBuffer 到Filesystem Cache 的过程就叫做 refresh；
+      2. 当然在某些情况下，存在 Momery Buffer 和 Filesystem Cache 的数据可能会丢失，ES 是通过 translog 的机制来保证数据的可靠性的。其实现机制是接收到请求后，同时也
+         会写入到 translog 中，当 Filesystem cache 中的数据写入到磁盘中时，才会清除掉，这个过程叫做 flush；
+      3. 在 flush 过程中，内存中的缓冲将被清除，内容被写入一个新段，段的 fsync将创建一个新的提交点，并将内容刷新到磁盘，旧的 translog 将被删除并开始一个新的translog。
+      4. 、flush 触发的时机是定时触发（默认 30 分钟）或者 translog 变得太大（默认为 512M）时
 
 11. Lucene 的 Segement
 
@@ -4867,9 +4850,7 @@ OOP 面向对象
 
     
 
-12. 服务提供者能实现失效踢出是什么原理
-
-    服务失效踢出基于 Zookeeper 的临时节点原理
+    
 
 13. 服务读写推荐的容错策略是怎样的
 
@@ -5690,7 +5671,7 @@ OOP 面向对象
    2. 数据同步： Leader 服务器与其他服务器进行数据同步
    3. 消息广播： Leader 服务器将数据发送给其他
 
-3. 一致性 一致性 Hash
+3. 一致性 Hash
 
    一致性哈希算法(Consistent Hashing Algorithm)是一种分布式算法，常用于负载均衡。Memcached client 也选择这种算法，解决将 key-value 均匀分配到众多 Memcached server 上的问题。它可以取代传统的取模操作，解决了取模操作无法应对增删 Memcached Server 的问题(增删 server 会导致同一个 key,在 get 操作时分配不到数据真正存储的 server，命中率会急剧下降)
 
@@ -5722,9 +5703,7 @@ OOP 面向对象
 
          通过 hash 然后求余的方法带来的最大问题就在于不能满足单调性，当 cache 有所变动时，cache 会失效
 
-      6. 
-
-   3. 
+4. 
 
 ### 加密算法
 
