@@ -84,15 +84,16 @@ public class LinkedList<E>
     extends AbstractSequentialList<E>
     implements List<E>, Deque<E>, Cloneable, java.io.Serializable
 {
+    // 元素个数
     transient int size = 0;
-
+    // 指向第一个节点的指针
     /**
      * Pointer to first node.
      * Invariant: (first == null && last == null) ||
      *            (first.prev == null && first.item != null)
      */
     transient Node<E> first;
-
+    // 指向最后一个节点的指针
     /**
      * Pointer to last node.
      * Invariant: (first == null && last == null) ||
@@ -123,14 +124,18 @@ public class LinkedList<E>
      * Links e as first element.
      */
     private void linkFirst(E e) {
+        // 将头节点赋值给f
         final Node<E> f = first;
+        // 构造一个新的节点
         final Node<E> newNode = new Node<>(null, e, f);
+        // 将新节点设置为头节点，将原来的头节点f 变为第二个节点
         first = newNode;
-        if (f == null)
+        if (f == null) // 如果原理的头节点为空,将这个新的节点设置为尾节点
             last = newNode;
         else
+            //将原来的头节点的上一个节点指向新节点
             f.prev = newNode;
-        size++;
+        size++; // 节点数+1
         modCount++;
     }
 
@@ -138,14 +143,18 @@ public class LinkedList<E>
      * Links e as last element.
      */
     void linkLast(E e) {
+        // 将l 设置为为节点
         final Node<E> l = last;
+        // 构造新的节点
         final Node<E> newNode = new Node<>(l, e, null);
+        // 将尾节点设置为新的节点
         last = newNode;
         if (l == null)
             first = newNode;
         else
+            // 将原来为节点的下一个节点，指向新节点
             l.next = newNode;
-        size++;
+        size++; // 节点数加 1
         modCount++;
     }
 
@@ -968,10 +977,10 @@ public class LinkedList<E>
     }
 
     private static class Node<E> {
-        E item;
-        Node<E> next;
-        Node<E> prev;
-
+        E item; // 数组元素
+        Node<E> next; // 指向下一个节点
+        Node<E> prev;  // 指向上一个节点
+        // 构造函数
         Node(Node<E> prev, E element, Node<E> next) {
             this.item = element;
             this.next = next;
