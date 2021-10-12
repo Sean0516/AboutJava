@@ -67,6 +67,7 @@ private static int calculateCapacity(Object[] elementData, int minCapacity) {
 2. 获取新容量  新容量=old容量+ (old容量>>1 ) 将新容量更新为old容量的1.5 倍 需要注意的是 (在 jdk 1.6 时 ，扩容为 1.5+1)  .之所以使用位运算符。主要是因为位运算符比普通运算符的运算要块很多，因为程序仅仅移动了一下， 不需要计算，这样提高了效率，节省了资源
 3. 检查扩容后的容量是否大于最小需要容量 ，若扩容后的容量仍然小于最小需要容量，则把最小需要容量当作数组的新容量
 4. 比较新容量的值和 MAX_ARRAY_SIZE 的大小 进入 hugeCapacity 方法。 来决定容器的最大值。 主要是分两种情况 ，若最小需要容量大需要 MAX_ARRAY_SIZE  则 将Integer.MAX_VAKUE 作为新数组的大小。 若小，则将MAX_ARRAY_SIZE  作为新数组的容量
+5. 使用copyOf 将原始数组拷贝到新的数组
 
 ```java
     private void grow(int minCapacity) {

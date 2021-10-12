@@ -229,24 +229,24 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * The concurrent-programming-like SSA-based coding style helps
      * avoid aliasing errors amid all of the twisty pointer operations.
      */
-
+    // hashmap 初始容量为16
     /**
      * The default initial capacity - MUST be a power of two.
      */
     static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; // aka 16
-
+    // map 最大容量
     /**
      * The maximum capacity, used if a higher value is implicitly specified
      * by either of the constructors with arguments.
      * MUST be a power of two <= 1<<30.
      */
     static final int MAXIMUM_CAPACITY = 1 << 30;
-
+    // 默认填充因子 主要用于阈值计算
     /**
      * The load factor used when none specified in constructor.
      */
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
-
+    // 当链表长度大于8 会转为红黑树
     /**
      * The bin count threshold for using a tree rather than list for a
      * bin.  Bins are converted to trees when adding an element to a
@@ -256,14 +256,14 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * shrinkage.
      */
     static final int TREEIFY_THRESHOLD = 8;
-
+    // 当链表长度小于6 又会转为链表
     /**
      * The bin count threshold for untreeifying a (split) bin during a
      * resize operation. Should be less than TREEIFY_THRESHOLD, and at
      * most 6 to mesh with shrinkage detection under removal.
      */
     static final int UNTREEIFY_THRESHOLD = 6;
-
+    // 当map 中的容量大于这个值时，表中的链表才进行树形话
     /**
      * The smallest table capacity for which bins may be treeified.
      * (Otherwise the table is resized if too many nodes in a bin.)
@@ -386,7 +386,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     }
 
     /* ---------------- Fields -------------- */
-
+    // 初始化使用的数组
     /**
      * The table, initialized on first use, and resized as
      * necessary. When allocated, length is always a power of two.
@@ -400,12 +400,12 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * for keySet() and values().
      */
     transient Set<Map.Entry<K,V>> entrySet;
-
+    // 键值对的数量
     /**
      * The number of key-value mappings contained in this map.
      */
     transient int size;
-
+    // 快速失败
     /**
      * The number of times this HashMap has been structurally modified
      * Structural modifications are those that change the number of mappings in
@@ -414,7 +414,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * the HashMap fail-fast.  (See ConcurrentModificationException).
      */
     transient int modCount;
-
+    // 需要扩容的阈值
     /**
      * The next size value at which to resize (capacity * load factor).
      *

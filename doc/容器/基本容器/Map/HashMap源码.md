@@ -2,8 +2,44 @@
 
 JDK 1.8 HashMap 底层采用的是数组，数组中的元素存放在链表或红黑树中。
 
+#### 字段属性
 
-### HashMap 数据存放结构 （单向链表结构）
+```java
+// hashmap 初始容量为16
+static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; // aka 16
+// map 最大容量
+
+static final int MAXIMUM_CAPACITY = 1 << 30;
+// 默认装载因子 主要用于阈值计算
+
+static final float DEFAULT_LOAD_FACTOR = 0.75f;
+// 当链表长度大于8 会转为红黑树
+
+static final int TREEIFY_THRESHOLD = 8;
+// 当链表长度小于6 又会转为链表
+static final int UNTREEIFY_THRESHOLD = 6;
+// 当map 中的容量大于这个值时，表中的链表才进行树形话
+
+static final int MIN_TREEIFY_CAPACITY = 64;
+// 初始化使用的数组
+
+    transient Node<K,V>[] table;
+
+    transient Set<Map.Entry<K,V>> entrySet;
+    // 键值对的数量
+
+    transient int size;
+    // 快速失败
+   
+    transient int modCount;
+    // 需要扩容的阈值 capacity * load factor 超过这个值，就进行扩容，扩容后的容量为之前的2倍
+  
+    int threshold;
+
+```
+
+
+##### HashMap 数据存放结构 （单向链表结构）
 ```java
 static class Node<K,V> implements Map.Entry<K,V> {
         final int hash;
@@ -18,9 +54,7 @@ static class Node<K,V> implements Map.Entry<K,V> {
             this.next = next;
         }
     }
-```
-### 红黑树用来存放元素的数据结构
-```java
+//红黑树
     static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
         TreeNode<K,V> parent;  // red-black tree links
         TreeNode<K,V> left;
@@ -32,38 +66,10 @@ static class Node<K,V> implements Map.Entry<K,V> {
         }
     }
 ```
-HashMap 类变量以及构造方法
-```java
-public class HashMap<K,V> extends AbstractMap<K,V>
-    implements Map<K,V>, Cloneable, Serializable {
-    //初始化容量，默认为16
-	static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; // aka 16
-	// 最大容量
-    static final int MAXIMUM_CAPACITY = 1 << 30;
-	// 	扩容因子，当使用的容量达到当前容量的75% 就进行扩容操作
-    static final float DEFAULT_LOAD_FACTOR = 0.75f;
-	//  当前Map 能容纳的键值对数量的最大值，草果这个值就进行扩容
-    int threshold;
-    // 链表转化为红黑树的最大长度阈值。当链表长度达到这个长度，将会进化为红黑树
-    static final int TREEIFY_THRESHOLD = 8;
-	//Node数组，实际存放 键值对 的地方
-    transient Node<K,V>[] table;
-    
-    // 构造方法,用于指定初始化容量
-      public HashMap(int initialCapacity, float loadFactor) {
-        if (initialCapacity < 0)
-            throw new IllegalArgumentException("Illegal initial capacity: " +
-                                               initialCapacity);
-        if (initialCapacity > MAXIMUM_CAPACITY)
-            initialCapacity = MAXIMUM_CAPACITY;
-        if (loadFactor <= 0 || Float.isNaN(loadFactor))
-            throw new IllegalArgumentException("Illegal load factor: " +
-                                               loadFactor);
-        this.loadFactor = loadFactor;
-        this.threshold = tableSizeFor(initialCapacity);
-    }
-}
-```
+
+
+
+
 ### HashMap put 方法  （putVal）
 ```java
 final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
@@ -230,5 +236,4 @@ final Node<K,V>[] resize() {
         return null;
     }
 ```
-
 
