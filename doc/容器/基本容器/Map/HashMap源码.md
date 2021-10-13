@@ -22,18 +22,14 @@ static final int UNTREEIFY_THRESHOLD = 6;
 
 static final int MIN_TREEIFY_CAPACITY = 64;
 // 初始化使用的数组
-
     transient Node<K,V>[] table;
-
     transient Set<Map.Entry<K,V>> entrySet;
     // 键值对的数量
-
     transient int size;
     // 快速失败
    
     transient int modCount;
     // 需要扩容的阈值 capacity * load factor 超过这个值，就进行扩容，扩容后的容量为之前的2倍
-  
     int threshold;
 
 ```
@@ -67,10 +63,36 @@ static class Node<K,V> implements Map.Entry<K,V> {
     }
 ```
 
+#### 确定Hash桶数组索引位置
 
+1. 取hashCode 值
+2. 高位参与运算 h>>>16
+3. 取模运算  （n-1） & hash
 
+```java
+static final int hash(Object key) {
+    int h;
+    // 取hashCode 值, 高位参与运算 取模运算
+    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+}
 
-### HashMap put 方法  （putVal）
+// (n - 1) & hash] 取模运算，定位当前hash 在table 中的index
+    
+```
+
+#### HashMap put 方法  （putVal）
+
+1. 判断数组table是否为空，为空则执行 resize 进行扩容
+2. 根据key 计算hash 获得插入数组索引 i ，如果tab[i] 为空，则创建新节点添加。
+3. 如果不为空，则判断tab[i] 的首个元素是否和key 一样，一样则直接覆盖value 。
+4. 如果不一样，则判断tab[i]  是否为treeNode 如果是红黑树，则直接在树中插入键值对
+5. 遍历table[i] ，判断链表长度是否大于8 ，大于8，则将链表转化为红黑树。如果遍历过程中，发现key 已经存在，则覆盖value
+6. 插入成功了，进行容量判断，是否进行扩容
+
+##### 数组上有5个元素，而某个链表上有3个元素，问此HashMap的size是多大
+
+7 个元素  
+
 ```java
 final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
@@ -126,7 +148,11 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
         return null;
     }
 ```
-### 扩容函数 resize
+#### 扩容函数 resize
+
+1. 计算新桶的新的容量和新的阈值
+2. 将原来集合的元素重新映射到新的集合中 
+
 ```java
 final Node<K,V>[] resize() {
         Node<K,V>[] oldTab = table;
@@ -210,7 +236,66 @@ final Node<K,V>[] resize() {
         return newTab;
     }
 ```
-### 获取Map 中对应节点的代码
+#### 删除元素
+
+1. 根据key 找到index ，元素在桶中的位置
+2. 如果是链表，则遍历链表删除 。 
+3. 如果是红黑树，则进行树遍历，删除元素，调整树结构 （当红黑树节点小于6时，会转化为链表）
+
+```java
+final Node<K,V> removeNode(int hash, Object key, Object value,
+                           boolean matchValue, boolean movable) {
+    Node<K,V>[] tab; Node<K,V> p; int n, index;
+    if ((tab = table) != null && (n = tab.length) > 0 &&
+        (p = tab[index = (n - 1) & hash]) != null) {
+        // 定位key在桶中的位置
+        Node<K,V> node = null, e; K k; V v;
+        if (p.hash == hash &&
+            ((k = p.key) == key || (key != null && key.equals(k))))
+            // 获取当前的节点的元素
+            node = p;
+        // 如果当前节点还存在next 节点，则需要在链表和红黑树中查找需要删除的节点
+        else if ((e = p.next) != null) {
+            if (p instanceof TreeNode)
+                // 红黑树中查找
+                node = ((TreeNode<K,V>)p).getTreeNode(hash, key);
+            else {
+                // 链表中查找
+                do {
+                    if (e.hash == hash &&
+                        ((k = e.key) == key ||
+                         (key != null && key.equals(k)))) {
+                        node = e;
+                        break;
+                    }
+                    p = e;
+                } while ((e = e.next) != null);
+            }
+        }
+
+        if (node != null && (!matchValue || (v = node.value) == value ||
+                             (value != null && value.equals(v)))) {
+            if (node instanceof TreeNode)
+                // 删除红黑树中的节点，并重新构建树结构
+                ((TreeNode<K,V>)node).removeTreeNode(this, tab, movable);
+            else if (node == p)
+                // 直接删除数组中的元素
+                tab[index] = node.next;
+            else
+                // 删除链表中的元素
+                p.next = node.next;
+            ++modCount;
+            --size;
+            afterNodeRemoval(node);
+            return node;
+        }
+    }
+    return null;
+}
+```
+
+#### 获取Map 中对应节点的代码
+
 ```java
  final Node<K,V> getNode(int hash, Object key) {
         Node<K,V>[] tab; Node<K,V> first, e; int n; K k;

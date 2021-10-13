@@ -220,13 +220,13 @@ public class LinkedHashMap<K,V>
 
     // link at the end of list
     private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
-        LinkedHashMap.Entry<K,V> last = tail;
-        tail = p;
+        LinkedHashMap.Entry<K,V> last = tail; // 使用临时变量记录尾节点
+        tail = p; // 将尾节点设置为当前插入的节点
         if (last == null)
-            head = p;
+            head = p; // 如果尾节点为空，则设置插入的节点为头节点
         else {
-            p.before = last;
-            last.after = p;
+            p.before = last; // 如果链表不为空，则将插入节点的前驱节点设置为原始尾节点
+            last.after = p; // 原始尾节点的后驱设置尾当前插入的节点
         }
     }
 
@@ -254,8 +254,8 @@ public class LinkedHashMap<K,V>
 
     Node<K,V> newNode(int hash, K key, V value, Node<K,V> e) {
         LinkedHashMap.Entry<K,V> p =
-            new LinkedHashMap.Entry<K,V>(hash, key, value, e);
-        linkNodeLast(p);
+            new LinkedHashMap.Entry<K,V>(hash, key, value, e); // 初始化一个新的节点
+        linkNodeLast(p);  // 将添加的元素设置为链表的尾节点
         return p;
     }
 
@@ -280,7 +280,7 @@ public class LinkedHashMap<K,V>
         return t;
     }
 
-    void afterNodeRemoval(Node<K,V> e) { // unlink
+    void afterNodeRemoval(Node<K,V> e) { // 删除某个节点时，为了保证链表还是有序的,那么必须维护其前后节点的关系
         LinkedHashMap.Entry<K,V> p =
             (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
         p.before = p.after = null;
@@ -296,17 +296,17 @@ public class LinkedHashMap<K,V>
 
     void afterNodeInsertion(boolean evict) { // possibly remove eldest
         LinkedHashMap.Entry<K,V> first;
-        if (evict && (first = head) != null && removeEldestEntry(first)) {
+        if (evict && (first = head) != null && removeEldestEntry(first)) { // 当重写removeEldestEntry的话，那么将会删除最老的一个元素
             K key = first.key;
             removeNode(hash(key), key, null, false, true);
         }
     }
 
-    void afterNodeAccess(Node<K,V> e) { // move node to last
+    void afterNodeAccess(Node<K,V> e) { // 将当前节点放到双向链表的尾部
         LinkedHashMap.Entry<K,V> last;
-        if (accessOrder && (last = tail) != e) {
+        if (accessOrder && (last = tail) != e) { // 当accessOrder为true 且当前节点不等于尾节点的时候，将last 节点赋值为tail 节点
             LinkedHashMap.Entry<K,V> p =
-                (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;
+                (LinkedHashMap.Entry<K,V>)e, b = p.before, a = p.after;// 记录当前节点的上一个节点和下一个节点
             p.after = null;
             if (b == null)
                 head = a;
@@ -322,7 +322,7 @@ public class LinkedHashMap<K,V>
                 p.before = last;
                 last.after = p;
             }
-            tail = p;
+            tail = p; // 设置尾节点尾p
             ++modCount;
         }
     }

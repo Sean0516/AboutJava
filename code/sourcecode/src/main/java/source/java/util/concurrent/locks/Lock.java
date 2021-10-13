@@ -181,7 +181,7 @@ public interface Lock {
      * circumstances and the exception type must be documented by that
      * {@code Lock} implementation.
      */
-    void lock();
+    void lock();// 获取锁
 
     /**
      * Acquires the lock unless the current thread is
@@ -229,7 +229,7 @@ public interface Lock {
      *         interrupted while acquiring the lock (and interruption
      *         of lock acquisition is supported)
      */
-    void lockInterruptibly() throws InterruptedException;
+    void lockInterruptibly() throws InterruptedException; // 获取锁，当线程中断抛出异常
 
     /**
      * Acquires the lock only if it is free at the time of invocation.
@@ -258,7 +258,7 @@ public interface Lock {
      * @return {@code true} if the lock was acquired and
      *         {@code false} otherwise
      */
-    boolean tryLock();
+    boolean tryLock(); // 只有当调用时，锁是空闲的，才获取锁
 
     /**
      * Acquires the lock if it is free within the given waiting time and the
@@ -332,7 +332,7 @@ public interface Lock {
      * Any restrictions and the exception
      * type must be documented by that {@code Lock} implementation.
      */
-    void unlock();
+    void unlock(); // 释放锁
 
     /**
      * Returns a new {@link Condition} instance that is bound to this
