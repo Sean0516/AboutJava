@@ -5,7 +5,7 @@ LinkedBlockingQueue 是底层基于单向链表实现的阻塞队列 ，可以�
 ### LinkedBlockingQueue 类的属性
 
 
-```
+```java
 // 队列容量
 private final int capacity;
 

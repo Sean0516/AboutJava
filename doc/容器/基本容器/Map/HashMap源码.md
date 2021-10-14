@@ -66,8 +66,8 @@ static class Node<K,V> implements Map.Entry<K,V> {
 #### 确定Hash桶数组索引位置
 
 1. 取hashCode 值
-2. 高位参与运算 h>>>16
-3. 取模运算  （n-1） & hash
+2. 高位参与运算 h>>>16  （h为hashCode 的值）
+3. 取模运算  （n-1） & hash  （n 表示table 的长度）
 
 ```java
 static final int hash(Object key) {

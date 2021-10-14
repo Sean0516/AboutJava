@@ -145,8 +145,8 @@ class Thread implements Runnable {
         registerNatives();
     }
 
-    private volatile String name;
-    private int            priority;
+    private volatile String name; // 线程名称
+    private int            priority; // 优先级
     private Thread         threadQ;
     private long           eetop;
 
@@ -154,19 +154,19 @@ class Thread implements Runnable {
     private boolean     single_step;
 
     /* Whether or not the thread is a daemon thread. */
-    private boolean     daemon = false;
+    private boolean     daemon = false; // 是否为守护线程
 
     /* JVM state */
     private boolean     stillborn = false;
 
     /* What will be run. */
-    private Runnable target;
+    private Runnable target; // 线程要执行的目标任务
 
     /* The group of this thread */
-    private ThreadGroup group;
+    private ThreadGroup group; // 线程组
 
     /* The context ClassLoader for this thread */
-    private ClassLoader contextClassLoader;
+    private ClassLoader contextClassLoader; // 类加载器
 
     /* The inherited AccessControlContext of this thread */
     private AccessControlContext inheritedAccessControlContext;
@@ -179,20 +179,20 @@ class Thread implements Runnable {
 
     /* ThreadLocal values pertaining to this thread. This map is maintained
      * by the ThreadLocal class. */
-    ThreadLocal.ThreadLocalMap threadLocals = null;
+    ThreadLocal.ThreadLocalMap threadLocals = null; //threadLocal map
 
     /*
      * InheritableThreadLocal values pertaining to this thread. This map is
      * maintained by the InheritableThreadLocal class.
      */
-    ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
+    ThreadLocal.ThreadLocalMap inheritableThreadLocals = null; //主要针对父子线程参数传递的thread local map
 
     /*
      * The requested stack size for this thread, or 0 if the creator did
      * not specify a stack size.  It is up to the VM to do whatever it
      * likes with this number; some VMs will ignore it.
      */
-    private long stackSize;
+    private long stackSize; // 线程栈的大小
 
     /*
      * JVM-private state that persists after native thread termination.
@@ -211,7 +211,7 @@ class Thread implements Runnable {
      * initialized to indicate thread 'not yet started'
      */
 
-    private volatile int threadStatus = 0;
+    private volatile int threadStatus = 0; // 线程状态
 
 
     private static synchronized long nextThreadID() {
@@ -362,16 +362,16 @@ class Thread implements Runnable {
      * @param inheritThreadLocals if {@code true}, inherit initial values for
      *            inheritable thread-locals from the constructing thread
      */
-    private void init(ThreadGroup g, Runnable target, String name,
+    private void init(ThreadGroup g, Runnable target, String name, // 初始化线程
                       long stackSize, AccessControlContext acc,
                       boolean inheritThreadLocals) {
-        if (name == null) {
+        if (name == null) { // 线程名不能为空
             throw new NullPointerException("name cannot be null");
         }
 
         this.name = name;
 
-        Thread parent = currentThread();
+        Thread parent = currentThread(); // 当前线程就是该线程的父线程
         SecurityManager security = System.getSecurityManager();
         if (g == null) {
             /* Determine if it's an applet or not */
@@ -404,7 +404,7 @@ class Thread implements Runnable {
 
         g.addUnstarted();
 
-        this.group = g;
+        this.group = g; // 设置父线程对象的属性
         this.daemon = parent.isDaemon();
         this.priority = parent.getPriority();
         if (security == null || isCCLOverridden(parent.getClass()))
@@ -417,12 +417,12 @@ class Thread implements Runnable {
         setPriority(priority);
         if (inheritThreadLocals && parent.inheritableThreadLocals != null)
             this.inheritableThreadLocals =
-                ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);
+                ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);// 创建线程共享变量副本
         /* Stash the specified stack size in case the VM cares */
         this.stackSize = stackSize;
 
         /* Set thread ID */
-        tid = nextThreadID();
+        tid = nextThreadID();//分配线程ID
     }
 
     /**
@@ -704,22 +704,22 @@ class Thread implements Runnable {
          *
          * A zero status value corresponds to state "NEW".
          */
-        if (threadStatus != 0)
+        if (threadStatus != 0) // 如果线程初始化未做好，抛出异常
             throw new IllegalThreadStateException();
 
         /* Notify the group that this thread is about to be started
          * so that it can be added to the group's list of threads
          * and the group's unstarted count can be decremented. */
-        group.add(this);
+        group.add(this); // 通知group 该线程即将启动。group 未启动的线程数量减1
 
         boolean started = false;
         try {
-            start0();
+            start0(); // 调用本地方法 start0 启动线程 然后执行run方法
             started = true;
         } finally {
             try {
                 if (!started) {
-                    group.threadStartFailed(this);
+                    group.threadStartFailed(this); //启动不成功，group设置当前线程启动失败
                 }
             } catch (Throwable ignore) {
                 /* do nothing. If start0 threw a Throwable then
@@ -911,14 +911,14 @@ class Thread implements Runnable {
      * @revised 6.0
      * @spec JSR-51
      */
-    public void interrupt() {
+    public void interrupt() { // 线程中断
         if (this != Thread.currentThread())
             checkAccess();
 
         synchronized (blockerLock) {
             Interruptible b = blocker;
             if (b != null) {
-                interrupt0();           // Just to set the interrupt flag
+                interrupt0();           //只是将该线程发出一个中断信号,告诉他线程将要结束了，但是具体的中断还是继续运行，由程序内部决定
                 b.interrupt(this);
                 return;
             }
