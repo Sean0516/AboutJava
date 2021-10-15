@@ -1103,22 +1103,22 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * non-null.  If resulting value is null, delete.
      */
     final V replaceNode(Object key, V value, Object cv) {
-        int hash = spread(key.hashCode());
+        int hash = spread(key.hashCode());// 计算key 的hash 值
         for (Node<K,V>[] tab = table;;) {
             Node<K,V> f; int n, i, fh;
             if (tab == null || (n = tab.length) == 0 ||
-                (f = tabAt(tab, i = (n - 1) & hash)) == null)
+                (f = tabAt(tab, i = (n - 1) & hash)) == null) // tab 为空 且 未找到对接的节点 跳出循环
                 break;
-            else if ((fh = f.hash) == MOVED)
+            else if ((fh = f.hash) == MOVED) // 当前数组正在扩容,先帮助扩容
                 tab = helpTransfer(tab, f);
             else {
                 V oldVal = null;
                 boolean validated = false;
-                synchronized (f) {
-                    if (tabAt(tab, i) == f) {
-                        if (fh >= 0) {
+                synchronized (f) {// 对需要删除的节点加锁
+                    if (tabAt(tab, i) == f) { // 检测线程是否被修改,防止其他线程的写修改
+                        if (fh >= 0) { //判断节点类型 >0 则表示为链表
                             validated = true;
-                            for (Node<K,V> e = f, pred = null;;) {
+                            for (Node<K,V> e = f, pred = null;;) { // 遍历链表,查找
                                 K ek;
                                 if (e.hash == hash &&
                                     ((ek = e.key) == key ||
@@ -1126,12 +1126,12 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                                     V ev = e.val;
                                     if (cv == null || cv == ev ||
                                         (ev != null && cv.equals(ev))) {
-                                        oldVal = ev;
+                                        oldVal = ev; // 保存旧值
                                         if (value != null)
                                             e.val = value;
-                                        else if (pred != null)
+                                        else if (pred != null) // 当前节点e 不是头节点 更新e 前驱节点的后继节点为e 节点的后继节点
                                             pred.next = e.next;
-                                        else
+                                        else // e 为头节点 更新table[i] 为头节点的后继节点，将头节点删除
                                             setTabAt(tab, i, e.next);
                                     }
                                     break;
@@ -1141,28 +1141,28 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                                     break;
                             }
                         }
-                        else if (f instanceof TreeBin) {
+                        else if (f instanceof TreeBin) { // 如果为红黑树
                             validated = true;
-                            TreeBin<K,V> t = (TreeBin<K,V>)f;
+                            TreeBin<K,V> t = (TreeBin<K,V>)f; // 强制类型转换
                             TreeNode<K,V> r, p;
                             if ((r = t.root) != null &&
-                                (p = r.findTreeNode(hash, key, null)) != null) {
+                                (p = r.findTreeNode(hash, key, null)) != null) { //红黑树节点不为空 且查询 key 相等的节点
                                 V pv = p.val;
                                 if (cv == null || cv == pv ||
                                     (pv != null && cv.equals(pv))) {
-                                    oldVal = pv;
+                                    oldVal = pv; // 保存旧值
                                     if (value != null)
                                         p.val = value;
-                                    else if (t.removeTreeNode(p))
+                                    else if (t.removeTreeNode(p)) //  从红黑树中移除节点
                                         setTabAt(tab, i, untreeify(t.first));
                                 }
                             }
                         }
                     }
                 }
-                if (validated) {
+                if (validated) { // 删除数据成功后,将计数减去 1
                     if (oldVal != null) {
-                        if (value == null)
+                        if (value == null) // value 不为空,则是为了判断是否为replace 元素
                             addCount(-1L, -1);
                         return oldVal;
                     }
@@ -2253,7 +2253,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @param x the count to add
      * @param check if <0, don't check resize, if <= 1 only check if uncontended
      */
-    private final void addCount(long x, int check) {
+    private final void addCount(long x, int check) { // 更新计数,判断是否需要扩容
         CounterCell[] as; long b, s;
         if ((as = counterCells) != null ||
             !U.compareAndSwapLong(this, BASECOUNT, b = baseCount, s = b + x)) {
@@ -2262,15 +2262,15 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
             if (as == null || (m = as.length - 1) < 0 ||
                 (a = as[ThreadLocalRandom.getProbe() & m]) == null ||
                 !(uncontended =
-                  U.compareAndSwapLong(a, CELLVALUE, v = a.value, v + x))) {
-                fullAddCount(x, uncontended);
+                  U.compareAndSwapLong(a, CELLVALUE, v = a.value, v + x))) { // as 为null 说明没发生并发冲突,通过CAS 将计数信息累加到baseCount
+                fullAddCount(x, uncontended); // 未初始化或CAS更新失败, 执行fullAddCount
                 return;
             }
             if (check <= 1)
                 return;
             s = sumCount();
         }
-        if (check >= 0) {
+        if (check >= 0) { // 检测是否需要扩容
             Node<K,V>[] tab, nt; int n, sc;
             while (s >= (long)(sc = sizeCtl) && (tab = table) != null &&
                    (n = tab.length) < MAXIMUM_CAPACITY) {
@@ -2281,7 +2281,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
                         transferIndex <= 0)
                         break;
                     if (U.compareAndSwapInt(this, SIZECTL, sc, sc + 1))
-                        transfer(tab, nt);
+                        transfer(tab, nt); // 扩容
                 }
                 else if (U.compareAndSwapInt(this, SIZECTL, sc,
                                              (rs << RESIZE_STAMP_SHIFT) + 2))

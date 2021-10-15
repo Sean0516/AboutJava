@@ -196,6 +196,90 @@ private final Node<K,V>[] initTable() { // 初始化数组
 
 
 
+##### 流程
+
+根据key 值查找到匹配的键值对 ，如果存在匹配的键值对，将其从table 中删除，最后更新键值对。 如果成功删除，将计数减 1
+
+1. table 为空 table[i] 为空，则表示桶为空，不需要删除，直接返回null
+2. table[i] 不为空, table[i] 的节点为ForwardingNode 节点 ，此时table 正在扩容，线程协助数据迁移 。数据迁移完毕后, 线程会重新自旋,进行插入
+3. 对node 进行加锁 检测 node 是否被修改，如果没修改，则判断 node 为链表还是红黑树
+4. 为链表,遍历查询key 相等的节点是否存在 ,存在则保存旧值,跳出循环,不存在，则返回nul
+5. 为红黑树, 从根节点查询key 相等的节点。,如果存在，则保存旧值,并删除节点
+6. 键值对删除完毕后，释放同步锁 ，通过addCount 将计数减一
+
+```java
+ final V replaceNode(Object key, V value, Object cv) {
+        int hash = spread(key.hashCode());// 计算key 的hash 值
+        for (Node<K,V>[] tab = table;;) {
+            Node<K,V> f; int n, i, fh;
+            if (tab == null || (n = tab.length) == 0 ||
+                (f = tabAt(tab, i = (n - 1) & hash)) == null) // tab 为空 且 未找到对接的节点 跳出循环
+                break;
+            else if ((fh = f.hash) == MOVED) // 当前数组正在扩容,先帮助扩容
+                tab = helpTransfer(tab, f);
+            else {
+                V oldVal = null;
+                boolean validated = false;
+                synchronized (f) {// 对需要删除的节点加锁
+                    if (tabAt(tab, i) == f) { // 检测线程是否被修改,防止其他线程的写修改
+                        if (fh >= 0) { //判断节点类型 >0 则表示为链表
+                            validated = true;
+                            for (Node<K,V> e = f, pred = null;;) { // 遍历链表,查找
+                                K ek;
+                                if (e.hash == hash &&
+                                    ((ek = e.key) == key ||
+                                     (ek != null && key.equals(ek)))) {
+                                    V ev = e.val;
+                                    if (cv == null || cv == ev ||
+                                        (ev != null && cv.equals(ev))) {
+                                        oldVal = ev; // 保存旧值
+                                        if (value != null)
+                                            e.val = value;
+                                        else if (pred != null) // 当前节点e 不是头节点 更新e 前驱节点的后继节点为e 节点的后继节点
+                                            pred.next = e.next;
+                                        else // e 为头节点 更新table[i] 为头节点的后继节点，将头节点删除
+                                            setTabAt(tab, i, e.next);
+                                    }
+                                    break;
+                                }
+                                pred = e;
+                                if ((e = e.next) == null)
+                                    break;
+                            }
+                        }
+                        else if (f instanceof TreeBin) { // 如果为红黑树
+                            validated = true;
+                            TreeBin<K,V> t = (TreeBin<K,V>)f; // 强制类型转换
+                            TreeNode<K,V> r, p;
+                            if ((r = t.root) != null &&
+                                (p = r.findTreeNode(hash, key, null)) != null) { //红黑树节点不为空 且查询 key 相等的节点
+                                V pv = p.val;
+                                if (cv == null || cv == pv ||
+                                    (pv != null && cv.equals(pv))) {
+                                    oldVal = pv; // 保存旧值
+                                    if (value != null)
+                                        p.val = value;
+                                    else if (t.removeTreeNode(p)) //  从红黑树中移除节点
+                                        setTabAt(tab, i, untreeify(t.first));
+                                }
+                            }
+                        }
+                    }
+                }
+                if (validated) { // 删除数据成功后,将计数减去 1
+                    if (oldVal != null) {
+                        if (value == null) // value 不为空,则是为了判断是否为replace 元素
+                            addCount(-1L, -1);
+                        return oldVal;
+                    }
+                    break;
+                }
+            }
+        }
+        return null;
+    }
+```
+
 #### get 方法
 
 ```java
@@ -218,6 +302,35 @@ public V get(Object key) {
     }
     return null;
 }
+// TreeBin 的find 方法
+  final Node<K,V> find(int h, Object k) {
+            if (k != null) {
+                for (Node<K,V> e = first; e != null; ) {
+                    int s; K ek;
+                    if (((s = lockState) & (WAITER|WRITER)) != 0) {
+                        if (e.hash == h &&
+                            ((ek = e.key) == k || (ek != null && k.equals(ek))))
+                            return e;
+                        e = e.next;
+                    }
+                    else if (U.compareAndSwapInt(this, LOCKSTATE, s,
+                                                 s + READER)) {
+                        TreeNode<K,V> r, p;
+                        try {
+                            p = ((r = root) == null ? null :
+                                 r.findTreeNode(h, k, null));
+                        } finally {
+                            Thread w;
+                            if (U.getAndAddInt(this, LOCKSTATE, -READER) ==
+                                (READER|WAITER) && (w = waiter) != null)
+                                LockSupport.unpark(w);
+                        }
+                        return p;
+                    }
+                }
+            }
+            return null;
+        }
 ```
 
 ##### size 方法
@@ -240,9 +353,61 @@ final long sumCount() {// 计算map 中键值对的总数
 }
 ```
 
+##### addCount 
+
+用于size 的更新和数组扩容
+
+```java
+private final void addCount(long x, int check) { // 更新计数,判断是否需要扩容
+    CounterCell[] as; long b, s;
+    if ((as = counterCells) != null ||
+        !U.compareAndSwapLong(this, BASECOUNT, b = baseCount, s = b + x)) {
+        CounterCell a; long v; int m;
+        boolean uncontended = true;
+        if (as == null || (m = as.length - 1) < 0 ||
+            (a = as[ThreadLocalRandom.getProbe() & m]) == null ||
+            !(uncontended =
+              U.compareAndSwapLong(a, CELLVALUE, v = a.value, v + x))) { // as 为null 说明没发生并发冲突,通过CAS 将计数信息累加到baseCount
+            fullAddCount(x, uncontended);  // 未初始化或CAS更新失败, 执行fullAddCount
+            return;
+        }
+        if (check <= 1)
+            return;
+        s = sumCount();
+    }
+    if (check >= 0) { // 检测是否需要扩容
+        Node<K,V>[] tab, nt; int n, sc;
+        while (s >= (long)(sc = sizeCtl) && (tab = table) != null &&
+               (n = tab.length) < MAXIMUM_CAPACITY) {
+            int rs = resizeStamp(n);
+            if (sc < 0) {
+                if ((sc >>> RESIZE_STAMP_SHIFT) != rs || sc == rs + 1 ||
+                    sc == rs + MAX_RESIZERS || (nt = nextTable) == null ||
+                    transferIndex <= 0)
+                    break;
+                if (U.compareAndSwapInt(this, SIZECTL, sc, sc + 1))
+                    transfer(tab, nt); // 扩容
+            }
+            else if (U.compareAndSwapInt(this, SIZECTL, sc,
+                                         (rs << RESIZE_STAMP_SHIFT) + 2))
+                transfer(tab, null);
+            s = sumCount();
+        }
+    }
+}
+```
+
+
+
+
+
 #### 扩容和数据迁移 （太复杂，后面理解）
 
 首先是数组扩容，新建一个2倍于原来容量的新数组newTable，这一步需保证只能由一个线程完成。
 
-然后进行数据迁移，把旧数组table中的所有元素重新计算桶的位置后再转移到新数组中
+
+
+然后进行数据迁移，把旧数组table中的所有元素重新计算桶的位置后再转移到新数组中 
+
+
 

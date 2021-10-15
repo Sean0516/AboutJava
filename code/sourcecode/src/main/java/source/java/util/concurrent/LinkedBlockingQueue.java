@@ -134,34 +134,34 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
     }
 
     /** The capacity bound, or Integer.MAX_VALUE if none */
-    private final int capacity;
+    private final int capacity; // 队列容量，默认为Intger.MAX
 
     /** Current number of elements */
-    private final AtomicInteger count = new AtomicInteger();
+    private final AtomicInteger count = new AtomicInteger(); // 队列中元素的个数
 
     /**
      * Head of linked list.
      * Invariant: head.item == null
      */
-    transient Node<E> head;
+    transient Node<E> head; // 队头
 
     /**
      * Tail of linked list.
      * Invariant: last.next == null
      */
-    private transient Node<E> last;
+    private transient Node<E> last; // 队尾
 
     /** Lock held by take, poll, etc */
-    private final ReentrantLock takeLock = new ReentrantLock();
+    private final ReentrantLock takeLock = new ReentrantLock(); // take, poll, peek 等读操作的方法需要获取到这个锁
 
     /** Wait queue for waiting takes */
-    private final Condition notEmpty = takeLock.newCondition();
+    private final Condition notEmpty = takeLock.newCondition(); //如果读操作的时候队列是空的，那么等待 notEmpty 条件
 
     /** Lock held by put, offer, etc */
-    private final ReentrantLock putLock = new ReentrantLock();
+    private final ReentrantLock putLock = new ReentrantLock(); // put, offer 等写操作的方法需要获取到这个锁
 
     /** Wait queue for waiting puts */
-    private final Condition notFull = putLock.newCondition();
+    private final Condition notFull = putLock.newCondition();// 如果写操作的时候队列是满的，那么等待 notFull 条件
 
     /**
      * Signals a waiting take. Called only from put/offer (which do not
@@ -333,9 +333,9 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
         // Note: convention in all put/take/etc is to preset local var
         // holding count negative to indicate failure unless set.
         int c = -1;
-        Node<E> node = new Node<E>(e);
-        final ReentrantLock putLock = this.putLock;
-        final AtomicInteger count = this.count;
+        Node<E> node = new Node<E>(e); // 构建新的node 节点
+        final ReentrantLock putLock = this.putLock; // 获取put 锁
+        final AtomicInteger count = this.count; // 获取当前链表的长度
         putLock.lockInterruptibly();
         try {
             /*
@@ -346,17 +346,17 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
              * signalled if it ever changes from capacity. Similarly
              * for all other uses of count in other wait guards.
              */
-            while (count.get() == capacity) {
+            while (count.get() == capacity) { // 当链表长度和链表容量相等 。 在notFull 队列中等待
                 notFull.await();
             }
-            enqueue(node);
-            c = count.getAndIncrement();
+            enqueue(node); // 添加node 到链表
+            c = count.getAndIncrement(); // 链表长度+1
             if (c + 1 < capacity)
-                notFull.signal();
+                notFull.signal();// 元素插入后，队列未满，唤醒一个在notFull 上等待的线程插入元素
         } finally {
             putLock.unlock();
         }
-        if (c == 0)
+        if (c == 0) //这里的C是之前的,已经插入了一个元素，则可以唤醒notEmpty 上等待的线程，通知它可以获取元素了
             signalNotEmpty();
     }
 
@@ -436,20 +436,20 @@ public class LinkedBlockingQueue<E> extends AbstractQueue<E>
         int c = -1;
         final AtomicInteger count = this.count;
         final ReentrantLock takeLock = this.takeLock;
-        takeLock.lockInterruptibly();
+        takeLock.lockInterruptibly(); // tack 锁加锁
         try {
-            while (count.get() == 0) {
+            while (count.get() == 0) { // 如果队列为空，则将线程放入 notEmpty 队列
                 notEmpty.await();
             }
-            x = dequeue();
-            c = count.getAndDecrement();
-            if (c > 1)
+            x = dequeue(); // 从队尾移除一个元素
+            c = count.getAndDecrement(); // 链表长度 -1
+            if (c > 1) // 队列出队后,容量不为空，唤醒 notEmpty 队列上的线程来take元素
                 notEmpty.signal();
         } finally {
             takeLock.unlock();
         }
         if (c == capacity)
-            signalNotFull();
+            signalNotFull(); // 这里的C 是之前的C 已经移除元素后，则可以唤醒notFull 上等待线程，通知可以插入元素了
         return x;
     }
 

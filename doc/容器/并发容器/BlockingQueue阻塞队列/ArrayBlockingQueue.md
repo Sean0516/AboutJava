@@ -4,24 +4,80 @@ ArrayBlockingQueue  是一个用数组实现的有界阻塞队列，此队列a�
 ArrayBlockingQueue  arrayBlockingQueue =new ArrayBlockingQueue (100,true);
 ```
 
-### ArrayBlockingQueue 有以下几个属性
+#### 字段属性
 
 
 ```java
-// 用于存放元素的数组
-final Object[] items;
-// 下一次读取操作的位置
-int takeIndex;
-// 下一次写入操作的位置
-int putIndex;
-// 队列中的元素数量
-int count;
-// 以下几个就是控制并发用的同步器
-final ReentrantLock lock;
-private final Condition notEmpty;
-private final Condition notFull;
+    final Object[] items; // 数组中存储队列的元素
+    int takeIndex; // take 索引, 下一个待移除元素的数组索引
+    int putIndex; //put 索引,下一个待插入位置的数组索引
+    int count; // 队列中元素个数
+    final ReentrantLock lock; // 全局锁 用来管理所有的访问
+    private final Condition notEmpty; // 非空条件队列
+    private final Condition notFull; // 非满条件队列
+```
+
+#### put 阻塞式插入
+
+```java
+public void put(E e) throws InterruptedException { // 阻塞式插入元素
+    checkNotNull(e); // 判断元素是否为空
+    final ReentrantLock lock = this.lock;
+    lock.lockInterruptibly(); // 尝试加锁,保证只有一个线程执行入队操作
+    try {
+        while (count == items.length) // 如果队列满了,当前线程会被阻塞,让出lock 并在notFull 条件队列中等待被其他线程唤醒
+            notFull.await();
+        enqueue(e); // 有空闲位置,插入元素
+    } finally {
+        lock.unlock();
+    }
+}
+    private void enqueue(E x) {
+        // assert lock.getHoldCount() == 1;
+        // assert items[putIndex] == null;
+        final Object[] items = this.items;
+        items[putIndex] = x;
+        if (++putIndex == items.length)
+            putIndex = 0;
+        count++;
+        notEmpty.signal(); // 唤醒notEmpty 中等待的线程
+    }
 
 ```
+
+##### take 阻塞式移除元素
+
+```java
+public E take() throws InterruptedException {
+    final ReentrantLock lock = this.lock;
+    lock.lockInterruptibly();
+    try {
+        while (count == 0) // 如果队列为空,线程被阻塞在notEmpty 条件队列上
+            notEmpty.await();
+        return dequeue();
+    } finally {
+        lock.unlock();
+    }
+}
+
+    private E dequeue() {
+        // assert lock.getHoldCount() == 1;
+        // assert items[takeIndex] != null;
+        final Object[] items = this.items;
+        @SuppressWarnings("unchecked")
+        E x = (E) items[takeIndex];
+        items[takeIndex] = null;
+        if (++takeIndex == items.length)
+            takeIndex = 0;
+        count--;
+        if (itrs != null)
+            itrs.elementDequeued();
+        notFull.signal(); // 因为移除了一个元素,可以唤醒notFull 上的队列,继续put数据
+        return x;
+    }
+
+```
+
 
 
 ArrayBlockingQueue实现的原理是，读写操作都需要获取到AQS 独占锁才能进行操作，如果队列为空，这个时候读操作的线程进入到读线程队列，等待写传线程写入新元素，然后唤醒读线程队列的第一个等待线程。 如果队列满了，这个时候写操作的线程进入写线程队列排队 ，等待读线程进行消费，然后唤醒写线程队列的第一个等待线程

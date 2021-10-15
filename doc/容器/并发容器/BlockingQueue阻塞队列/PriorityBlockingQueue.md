@@ -37,7 +37,7 @@ PriorityBlockingQueue 使用基于数组的二叉堆 来存放元素，所有的
 ### 扩容方法
 
 
-```
+```java
 private void tryGrow(Object[] array, int oldCap) {
     // 这边做了释放锁的操作
     lock.unlock(); // must release and then re-acquire main lock
