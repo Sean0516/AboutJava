@@ -131,7 +131,7 @@ public class LinkedHashSet<E>
      *               than zero, or if the load factor is nonpositive
      */
     public LinkedHashSet(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor, true);
+        super(initialCapacity, loadFactor, true); // 构造函数
     }
 
     /**

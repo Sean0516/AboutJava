@@ -10,6 +10,7 @@ linked list的add 方法不用像array list 考虑扩容以及复制数组的问
 ### get(int i)
 由于linked list的元素没有存储在一个数组中，因此其get 操作比array list更复杂， 在执行get 操作时，首先要判断传入的 index 值是否小于0 或者大于 等于当前 linked list 的size 值。 
 首先判断当前要获取元素的位置是否小于linked list的一般，如小于，则从头找到index 位置的next元素，如大于，则从队列的尾部往前查找到index位置对于的previous元素
+
 ### contains（E）
 linked list 采用遍历所有的元素， 并通过equals来判断元素
 

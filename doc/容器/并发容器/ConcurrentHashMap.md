@@ -17,3 +17,4 @@ ConcurrentHashMap 1.8 取消了 Segment 分段锁，采用CAS 和synchronized  �
 3. 使用3个CAS操作来确保node的一些操作的原子性，这种方式代替了锁。
 4. sizeCtl的不同值来代表不同含义，起到了控制的作用。
 5. 采用synchronized而不是ReentrantLock
+

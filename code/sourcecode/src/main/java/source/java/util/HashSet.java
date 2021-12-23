@@ -93,17 +93,17 @@ public class HashSet<E>
 {
     static final long serialVersionUID = -5024744406713321676L;
 
-    private transient HashMap<E,Object> map;
+    private transient HashMap<E,Object> map; //基于HahMap 实现,由HashMap 的key 的唯一性来保证元素不重复
 
     // Dummy value to associate with an Object in the backing Map
-    private static final Object PRESENT = new Object();
+    private static final Object PRESENT = new Object(); // 因为只需要用到HashMap中key唯一的特性，所以value全部使用同一个 Object实例填充，节省内存空间
 
     /**
      * Constructs a new, empty set; the backing <tt>HashMap</tt> instance has
      * default initial capacity (16) and load factor (0.75).
      */
     public HashSet() {
-        map = new HashMap<>();
+        map = new HashMap<>(); //实例化 HashSet 的时候，实际上初始化的是内部的HashMap
     }
 
     /**

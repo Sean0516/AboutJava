@@ -2,7 +2,7 @@ PriorityBlockingQueue 支持在并发情况下的优先级的无界阻塞队列�
 PriorityBlockingQueue 只能指定队列的初始化大小，如果不指定，默认为11 ，但是，在插入元素时( put 方法不会被block ，take 方法在队列为空的时候会阻塞)，如果空间不够PriorityBlockingQueue 会自动进行扩容 。
 
 ### PriorityBlockingQueue 拥有的属性如下
-```
+```java
 // 构造方法中，如果不指定大小的话，默认大小为 11
 private static final int DEFAULT_INITIAL_CAPACITY = 11;
 // 数组的最大容量

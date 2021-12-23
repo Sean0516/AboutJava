@@ -98,7 +98,7 @@ public class TreeSet<E> extends AbstractSet<E>
     private transient NavigableMap<E,Object> m;
 
     // Dummy value to associate with an Object in the backing Map
-    private static final Object PRESENT = new Object();
+    private static final Object PRESENT = new Object(); // 默认的value
 
     /**
      * Constructs a set backed by the specified navigable map.
@@ -121,7 +121,7 @@ public class TreeSet<E> extends AbstractSet<E>
      * {@code ClassCastException}.
      */
     public TreeSet() {
-        this(new TreeMap<E,Object>());
+        this(new TreeMap<E,Object>()); // 初始化TreeMap 对象
     }
 
     /**
@@ -138,7 +138,7 @@ public class TreeSet<E> extends AbstractSet<E>
      *        ordering} of the elements will be used.
      */
     public TreeSet(Comparator<? super E> comparator) {
-        this(new TreeMap<>(comparator));
+        this(new TreeMap<>(comparator)); // 自定义比较器传入
     }
 
     /**

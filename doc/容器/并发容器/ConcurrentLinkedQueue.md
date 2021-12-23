@@ -5,3 +5,4 @@ concurrentlinkedqueue 的阻塞队列是用加锁来实现，非阻塞队列可�
 ConcurrentLinkedQueue 使用链表作为数据结构， ConcurrentLinkedQueue 算是高并发环境中性能最好的队列，它之所以能有很好的性能，主要是因为内部的复杂实现
 
 ConcurrentLinkedQueue 适合对性能要求较高，同时对队列的读写存在多个线程同时进行的场景。 
+

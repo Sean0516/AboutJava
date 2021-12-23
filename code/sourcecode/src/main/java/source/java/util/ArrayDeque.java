@@ -96,26 +96,26 @@ public class ArrayDeque<E> extends AbstractCollection<E>
      * other.  We also guarantee that all array cells not holding
      * deque elements are always null.
      */
-    transient Object[] elements; // non-private to simplify nested class access
+    transient Object[] elements; // objec 数组,用于存放数据
 
     /**
      * The index of the element at the head of the deque (which is the
      * element that would be removed by remove() or pop()); or an
      * arbitrary number equal to tail if the deque is empty.
      */
-    transient int head;
+    transient int head;// 头节点
 
     /**
      * The index at which the next element would be added to the tail
      * of the deque (via addLast(E), add(E), or push(E)).
      */
-    transient int tail;
+    transient int tail; // 尾节点
 
     /**
      * The minimum capacity that we'll use for a newly created deque.
      * Must be a power of 2.
      */
-    private static final int MIN_INITIAL_CAPACITY = 8;
+    private static final int MIN_INITIAL_CAPACITY = 8; // 最小容量,用于容量计算
 
     // ******  Array allocation and resizing utilities ******
 
@@ -247,7 +247,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
     public void addLast(E e) {
         if (e == null)
             throw new NullPointerException();
-        elements[tail] = e;
+        elements[tail] = e;// 添加数据到队列的队尾
         if ( (tail = (tail + 1) & (elements.length - 1)) == head)
             doubleCapacity();
     }

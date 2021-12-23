@@ -86,14 +86,14 @@ public class LinkedList<E>
 {
     // 元素个数
     transient int size = 0;
-    // 指向第一个节点的指针
+    // 头节点的指针
     /**
      * Pointer to first node.
      * Invariant: (first == null && last == null) ||
      *            (first.prev == null && first.item != null)
      */
     transient Node<E> first;
-    // 指向最后一个节点的指针
+    // 尾节点的指针
     /**
      * Pointer to last node.
      * Invariant: (first == null && last == null) ||
@@ -501,8 +501,8 @@ public class LinkedList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public E get(int index) {
-        checkElementIndex(index);
-        return node(index).item;
+        checkElementIndex(index);// 检查是否下标越界
+        return node(index).item; // 根据index 去获取元素的数据
     }
 
     /**
@@ -596,7 +596,7 @@ public class LinkedList<E>
     Node<E> node(int index) {
         // assert isElementIndex(index);
 
-        if (index < (size >> 1)) {
+        if (index < (size >> 1)) { // size 的中位数，进行判断，是从头节点判断还是为节点判断
             Node<E> x = first;
             // 从开始节点到插入节点索引之间的所有节点向后移动一位
             for (int i = 0; i < index; i++)
@@ -1002,8 +1002,8 @@ public class LinkedList<E>
 
     private static class Node<E> {
         E item; // 数组元素
-        Node<E> next; // 指向下一个节点
-        Node<E> prev;  // 指向上一个节点
+        Node<E> next; // 后继节点
+        Node<E> prev;  // 前驱节点
         // 构造函数
         Node(Node<E> prev, E element, Node<E> next) {
             this.item = element;

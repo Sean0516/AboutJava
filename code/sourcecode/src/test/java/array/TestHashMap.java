@@ -1,11 +1,14 @@
+package array;
+
 import com.duplicall.map.CustomLinkedHashMap;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Queue;
 
 /**
- * @Description TestHashMap
+ * @Description array.TestHashMap
  * @Author Sean
  * @Date 2021/9/14 16:26
  * @Version 1.0

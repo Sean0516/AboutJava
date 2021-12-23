@@ -94,10 +94,10 @@ public class CopyOnWriteArrayList<E>
     private static final long serialVersionUID = 8673264195747942595L;
 
     /** The lock protecting all mutators */
-    final transient ReentrantLock lock = new ReentrantLock();
+    final transient ReentrantLock lock = new ReentrantLock(); // 锁
 
     /** The array, accessed only via getArray/setArray. */
-    private transient volatile Object[] array;
+    private transient volatile Object[] array; // 存放数据的数组
 
     /**
      * Gets the array.  Non-private so as to also be accessible
@@ -432,14 +432,14 @@ public class CopyOnWriteArrayList<E>
      * @return {@code true} (as specified by {@link Collection#add})
      */
     public boolean add(E e) {
-        final ReentrantLock lock = this.lock;
-        lock.lock();
+        final ReentrantLock lock = this.lock; // 获取锁
+        lock.lock(); // 加锁操作
         try {
-            Object[] elements = getArray();
-            int len = elements.length;
-            Object[] newElements = Arrays.copyOf(elements, len + 1);
-            newElements[len] = e;
-            setArray(newElements);
+            Object[] elements = getArray(); // 获取数组数据
+            int len = elements.length; // 获取数组长度
+            Object[] newElements = Arrays.copyOf(elements, len + 1);//使用copyOf 方法，将原始数组拷贝到新容量的数组中
+            newElements[len] = e; // 将添加的元素放入数组中
+            setArray(newElements); //将新生成的数组设置为原始数组
             return true;
         } finally {
             lock.unlock();
@@ -487,23 +487,23 @@ public class CopyOnWriteArrayList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public E remove(int index) {
-        final ReentrantLock lock = this.lock;
+        final ReentrantLock lock = this.lock; // 获取锁
         lock.lock();
         try {
-            Object[] elements = getArray();
-            int len = elements.length;
-            E oldValue = get(elements, index);
-            int numMoved = len - index - 1;
+            Object[] elements = getArray(); // 获取原始数据
+            int len = elements.length; // 获取数组长度
+            E oldValue = get(elements, index); // 获取需要删除的元素值
+            int numMoved = len - index - 1; // 计算需要移动的数量
             if (numMoved == 0)
-                setArray(Arrays.copyOf(elements, len - 1));
+                setArray(Arrays.copyOf(elements, len - 1));  // 拷贝数组
             else {
-                Object[] newElements = new Object[len - 1];
-                System.arraycopy(elements, 0, newElements, 0, index);
+                Object[] newElements = new Object[len - 1]; // 设置新数组的长度
+                System.arraycopy(elements, 0, newElements, 0, index); // 复制前一部分的数据
                 System.arraycopy(elements, index + 1, newElements, index,
-                                 numMoved);
-                setArray(newElements);
+                                 numMoved); // 复制后一部分的数据
+                setArray(newElements); // 设置新数组给元素数组
             }
-            return oldValue;
+            return oldValue; // 返回删除的数据
         } finally {
             lock.unlock();
         }
