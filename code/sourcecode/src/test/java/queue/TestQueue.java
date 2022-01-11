@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @Description TestQueue
@@ -27,5 +28,15 @@ public class TestQueue {
         String poll = queue.poll();
         System.out.println("poll = " + poll);
         System.out.println("queue = " + queue);
+    }
+    @Test
+    public  void testConcurrentLinkedQueue(){
+        ConcurrentLinkedQueue<String> concurrentLinkedQueue=new ConcurrentLinkedQueue<>();
+        concurrentLinkedQueue.offer("1");
+        concurrentLinkedQueue.offer("2");
+        concurrentLinkedQueue.offer("3");
+        concurrentLinkedQueue.offer("4");
+        String poll = concurrentLinkedQueue.poll();
+        System.out.println("poll = " + poll);
     }
 }

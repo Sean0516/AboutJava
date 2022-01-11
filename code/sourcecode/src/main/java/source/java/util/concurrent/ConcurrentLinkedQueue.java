@@ -178,8 +178,8 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      */
 
     private static class Node<E> {
-        volatile E item;
-        volatile Node<E> next;
+        volatile E item; // 元素数据
+        volatile Node<E> next; // 下一个节点
 
         /**
          * Constructs a new node.  Uses relaxed write because item can
@@ -233,7 +233,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      * - it is permitted for tail to lag behind head, that is, for tail
      *   to not be reachable from head!
      */
-    private transient volatile Node<E> head;
+    private transient volatile Node<E> head; // 头节点
 
     /**
      * A node from which the last node on list (that is, the unique
@@ -247,13 +247,13 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      *   to not be reachable from head!
      * - tail.next may or may not be self-pointing to tail.
      */
-    private transient volatile Node<E> tail;
+    private transient volatile Node<E> tail; // 尾节点
 
     /**
      * Creates a {@code ConcurrentLinkedQueue} that is initially empty.
      */
     public ConcurrentLinkedQueue() {
-        head = tail = new Node<E>(null);
+        head = tail = new Node<E>(null); // 无参构造函数 将头节点和尾节点都设置为 null 的Node
     }
 
     /**
