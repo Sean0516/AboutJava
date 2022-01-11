@@ -197,7 +197,7 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
             UNSAFE.putOrderedObject(this, nextOffset, val);
         }
 
-        boolean casNext(Node<E> cmp, Node<E> val) {
+        boolean casNext(Node<E> cmp, Node<E> val) {//p.casNext（null，n）方法用于将入队节点设置为当前队列尾节点的next节点，如果p是null，表示p是当前队列的尾节点，如果不为null，表示有其他线程更新了尾节点，则需要重新获取当前队列的尾节点。
             return UNSAFE.compareAndSwapObject(this, nextOffset, cmp, val);
         }
 
@@ -325,18 +325,18 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      */
     public boolean offer(E e) {
         checkNotNull(e);
-        final Node<E> newNode = new Node<E>(e);
+        final Node<E> newNode = new Node<E>(e); // 入队前构建一个node 节点
 
-        for (Node<E> t = tail, p = t;;) {
-            Node<E> q = p.next;
-            if (q == null) {
+        for (Node<E> t = tail, p = t;;) {  // 创建一个 tail 节点的引用 死循环
+            Node<E> q = p.next; //  获取p 的下一个节点
+            if (q == null) { // 如果q 为null ,则表示q 为尾节点
                 // p is last node
-                if (p.casNext(null, newNode)) {
+                if (p.casNext(null, newNode)) { // 设置入队节点为p 的next 节点
                     // Successful CAS is the linearization point
                     // for e to become an element of this queue,
                     // and for newNode to become "live".
                     if (p != t) // hop two nodes at a time
-                        casTail(t, newNode);  // Failure is OK.
+                        casTail(t, newNode);  // Failure is OK. 更新tail 节点,允许失败
                     return true;
                 }
                 // Lost CAS race to another thread; re-read next
@@ -355,15 +355,15 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
 
     public E poll() {
         restartFromHead:
-        for (;;) {
-            for (Node<E> h = head, p = h, q;;) {
-                E item = p.item;
+        for (;;) { // 循环
+            for (Node<E> h = head, p = h, q;;) {  // 需要出队的头节点
+                E item = p.item; // 获取元素
 
-                if (item != null && p.casItem(item, null)) {
-                    // Successful CAS is the linearization point
+                if (item != null && p.casItem(item, null)) { // 如果p节点的元素不为空，使用CAS设置p节点引用的元素为null
+                    // Successful CAS is the linearization point // 如果成功则返回p节点的元素
                     // for item to be removed from this queue.
                     if (p != h) // hop two nodes at a time
-                        updateHead(h, ((q = p.next) != null) ? q : p);
+                        updateHead(h, ((q = p.next) != null) ? q : p); // 将p节点下一个节点设置成head节点
                     return item;
                 }
                 else if ((q = p.next) == null) {
